@@ -37,16 +37,55 @@ const CONFIG = {
   gammaHost: 'https://gamma-api.polymarket.com',
 };
 
-// City coordinates for weather API
+// Known city coordinates for weather API
+// Auto-discovery adds new cities dynamically (see discoverCities)
 const CITY_COORDS = {
-  'nyc':        { lat: 40.7128, lon: -74.0060, country: 'US', name: 'New York City', slug: 'nyc' },
-  'london':     { lat: 51.5074, lon: -0.1278,  country: 'UK', name: 'London',        slug: 'london' },
+  'nyc':        { lat: 40.7128, lon: -74.0060,  country: 'US', name: 'New York City', slug: 'nyc' },
+  'london':     { lat: 51.5074, lon: -0.1278,   country: 'UK', name: 'London',        slug: 'london' },
   'seoul':      { lat: 37.5665, lon: 126.9780,  country: 'KR', name: 'Seoul',         slug: 'seoul' },
   'dallas':     { lat: 32.7767, lon: -96.7970,  country: 'US', name: 'Dallas',        slug: 'dallas' },
-  'seattle':    { lat: 47.6062, lon: -122.3321,  country: 'US', name: 'Seattle',       slug: 'seattle' },
+  'seattle':    { lat: 47.6062, lon: -122.3321, country: 'US', name: 'Seattle',       slug: 'seattle' },
   'ankara':     { lat: 39.9334, lon: 32.8597,   country: 'TR', name: 'Ankara',        slug: 'ankara' },
-  'wellington': { lat: -41.2865, lon: 174.7762,  country: 'NZ', name: 'Wellington',    slug: 'wellington' },
+  'wellington': { lat: -41.2865, lon: 174.7762, country: 'NZ', name: 'Wellington',    slug: 'wellington' },
+  'miami':      { lat: 25.7617, lon: -80.1918,  country: 'US', name: 'Miami',         slug: 'miami' },
+  'chicago':    { lat: 41.8781, lon: -87.6298,  country: 'US', name: 'Chicago',       slug: 'chicago' },
+  'toronto':    { lat: 43.6532, lon: -79.3832,  country: 'CA', name: 'Toronto',       slug: 'toronto' },
+  'atlanta':    { lat: 33.7490, lon: -84.3880,  country: 'US', name: 'Atlanta',       slug: 'atlanta' },
 };
+
+// Candidate cities to probe during auto-discovery (checked once per day)
+const CANDIDATE_CITIES = [
+  { slug: 'tokyo',          lat: 35.6762, lon: 139.6503, country: 'JP', name: 'Tokyo' },
+  { slug: 'paris',          lat: 48.8566, lon: 2.3522,   country: 'FR', name: 'Paris' },
+  { slug: 'berlin',         lat: 52.5200, lon: 13.4050,  country: 'DE', name: 'Berlin' },
+  { slug: 'sydney',         lat: -33.8688, lon: 151.2093, country: 'AU', name: 'Sydney' },
+  { slug: 'mumbai',         lat: 19.0760, lon: 72.8777,  country: 'IN', name: 'Mumbai' },
+  { slug: 'dubai',          lat: 25.2048, lon: 55.2708,  country: 'AE', name: 'Dubai' },
+  { slug: 'singapore',      lat: 1.3521,  lon: 103.8198, country: 'SG', name: 'Singapore' },
+  { slug: 'cairo',          lat: 30.0444, lon: 31.2357,  country: 'EG', name: 'Cairo' },
+  { slug: 'beijing',        lat: 39.9042, lon: 116.4074, country: 'CN', name: 'Beijing' },
+  { slug: 'mexico-city',    lat: 19.4326, lon: -99.1332, country: 'MX', name: 'Mexico City' },
+  { slug: 'bangkok',        lat: 13.7563, lon: 100.5018, country: 'TH', name: 'Bangkok' },
+  { slug: 'hong-kong',      lat: 22.3193, lon: 114.1694, country: 'HK', name: 'Hong Kong' },
+  { slug: 'los-angeles',    lat: 34.0522, lon: -118.2437, country: 'US', name: 'Los Angeles' },
+  { slug: 'san-francisco',  lat: 37.7749, lon: -122.4194, country: 'US', name: 'San Francisco' },
+  { slug: 'denver',         lat: 39.7392, lon: -104.9903, country: 'US', name: 'Denver' },
+  { slug: 'phoenix',        lat: 33.4484, lon: -112.0740, country: 'US', name: 'Phoenix' },
+  { slug: 'houston',        lat: 29.7604, lon: -95.3698, country: 'US', name: 'Houston' },
+  { slug: 'boston',          lat: 42.3601, lon: -71.0589, country: 'US', name: 'Boston' },
+  { slug: 'washington-dc',  lat: 38.9072, lon: -77.0369, country: 'US', name: 'Washington DC' },
+  { slug: 'austin',         lat: 30.2672, lon: -97.7431, country: 'US', name: 'Austin' },
+  { slug: 'las-vegas',      lat: 36.1699, lon: -115.1398, country: 'US', name: 'Las Vegas' },
+  { slug: 'minneapolis',    lat: 44.9778, lon: -93.2650, country: 'US', name: 'Minneapolis' },
+  { slug: 'detroit',        lat: 42.3314, lon: -83.0458, country: 'US', name: 'Detroit' },
+  { slug: 'new-orleans',    lat: 29.9511, lon: -90.0715, country: 'US', name: 'New Orleans' },
+  { slug: 'nashville',      lat: 36.1627, lon: -86.7816, country: 'US', name: 'Nashville' },
+  { slug: 'portland',       lat: 45.5152, lon: -122.6784, country: 'US', name: 'Portland' },
+  { slug: 'salt-lake-city', lat: 40.7608, lon: -111.8910, country: 'US', name: 'Salt Lake City' },
+  { slug: 'honolulu',       lat: 21.3069, lon: -157.8583, country: 'US', name: 'Honolulu' },
+  { slug: 'philadelphia',   lat: 39.9526, lon: -75.1652, country: 'US', name: 'Philadelphia' },
+  { slug: 'san-diego',      lat: 32.7157, lon: -117.1611, country: 'US', name: 'San Diego' },
+];
 
 // ═══════════════════════════════════════════════════
 // STATE MANAGEMENT (persisted to disk)
@@ -173,6 +212,55 @@ async function getUsdcEBalance() {
 // ═══════════════════════════════════════════════════
 // MARKET DISCOVERY
 // ═══════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════
+// CITY AUTO-DISCOVERY
+// ═══════════════════════════════════════════════════
+
+let lastDiscovery = 0;
+
+async function discoverCities() {
+  // Run once per day max
+  const now = Date.now();
+  if (now - lastDiscovery < 86_400_000) return;
+  lastDiscovery = now;
+  
+  log('🔎 Running city auto-discovery...');
+  const today = new Date();
+  let newCount = 0;
+  
+  for (const candidate of CANDIDATE_CITIES) {
+    // Skip if already known
+    if (CITY_COORDS[candidate.slug]) continue;
+    
+    const slug = generateSlug(candidate.slug, today);
+    const data = await fetchWithRetry(
+      `${CONFIG.gammaHost}/events?slug=${slug}`,
+      { headers: { 'Accept': 'application/json' } },
+      `discover:${candidate.slug}`
+    );
+    
+    if (data && Array.isArray(data) && data.length > 0) {
+      CITY_COORDS[candidate.slug] = {
+        lat: candidate.lat,
+        lon: candidate.lon,
+        country: candidate.country,
+        name: candidate.name,
+        slug: candidate.slug,
+      };
+      newCount++;
+      log(`   🆕 Discovered: ${candidate.name} (${candidate.slug})`);
+    }
+    
+    await sleep(300);
+  }
+  
+  if (newCount > 0) {
+    log(`   ✅ Added ${newCount} new cities, now monitoring ${Object.keys(CITY_COORDS).length} total`);
+  } else {
+    log(`   ℹ️  No new cities found (monitoring ${Object.keys(CITY_COORDS).length})`);
+  }
+}
 
 function generateSlug(city, date) {
   const monthNames = ['january', 'february', 'march', 'april', 'may', 'june',
@@ -690,6 +778,9 @@ async function main() {
       log(`\n${'═'.repeat(60)}`);
       log(`🔄 Scan #${scanNum} — ${ts()} — Budget: $${(CONFIG.maxBudget - state.totalSpent).toFixed(2)} left`);
       log(`${'═'.repeat(60)}`);
+      
+      // Auto-discover new cities (once per day)
+      await discoverCities();
       
       // Find markets
       const markets = await findWeatherMarkets();
