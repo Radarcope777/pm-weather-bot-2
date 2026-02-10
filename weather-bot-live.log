@@ -1,0 +1,794 @@
+[2026-02-09T09:25:58.013Z] 🌤️  Weather Trading Bot Starting...
+[2026-02-09T09:25:58.015Z] 📍 Monitoring 7 cities
+[2026-02-09T09:25:58.015Z] 💰 Max position size: $2
+[2026-02-09T09:25:58.015Z] 📊 Max open positions: 5
+[2026-02-09T09:25:58.015Z] 📈 Min edge threshold: 15%
+[2026-02-09T09:25:58.015Z]
+[2026-02-09T09:25:58.015Z] 🔑 Initializing wallet...
+[2026-02-09T09:25:58.483Z] ✅ Wallet ready
+[2026-02-09T09:25:58.484Z]
+[2026-02-09T09:25:58.484Z] 
+============================================================
+[2026-02-09T09:25:58.505Z] 🔄 Scan #1 - 10:25:58
+[2026-02-09T09:25:58.505Z] ============================================================
+[2026-02-09T09:25:58.505Z] 🔍 Searching for temperature markets...
+[2026-02-09T09:25:58.755Z]    ✅ Found: highest-temperature-in-nyc-on-february-9-2026 (7 markets)
+[2026-02-09T09:25:59.185Z]    ✅ Found: highest-temperature-in-nyc-on-february-10-2026 (7 markets)
+[2026-02-09T09:26:00.217Z]    ✅ Found: highest-temperature-in-london-on-february-9-2026 (7 markets)
+[2026-02-09T09:26:00.739Z]    ✅ Found: highest-temperature-in-london-on-february-10-2026 (7 markets)
+[2026-02-09T09:26:01.881Z]    ✅ Found: highest-temperature-in-seoul-on-february-9-2026 (7 markets)
+[2026-02-09T09:26:02.365Z]    ✅ Found: highest-temperature-in-seoul-on-february-10-2026 (7 markets)
+[2026-02-09T09:26:03.112Z]    ✅ Found: highest-temperature-in-dallas-on-february-9-2026 (7 markets)
+[2026-02-09T09:26:03.483Z]    ✅ Found: highest-temperature-in-dallas-on-february-10-2026 (7 markets)
+[2026-02-09T09:26:04.406Z]    ✅ Found: highest-temperature-in-seattle-on-february-9-2026 (7 markets)
+[2026-02-09T09:26:04.770Z]    ✅ Found: highest-temperature-in-seattle-on-february-10-2026 (7 markets)
+[2026-02-09T09:26:05.496Z]    ✅ Found: highest-temperature-in-ankara-on-february-9-2026 (7 markets)
+[2026-02-09T09:26:05.857Z]    ✅ Found: highest-temperature-in-ankara-on-february-10-2026 (7 markets)
+[2026-02-09T09:26:06.585Z]    ✅ Found: highest-temperature-in-wellington-on-february-9-2026 (7 markets)
+[2026-02-09T09:26:07.027Z]    ✅ Found: highest-temperature-in-wellington-on-february-10-2026 (7 markets)
+[2026-02-09T09:26:07.690Z] 🔍 Doing text search for additional markets...
+[2026-02-09T09:26:08.480Z]    ✅ Found via search: microstrategy-sell-any-bitcoin-in-2025 (4 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: kraken-ipo-in-2025 (3 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: macron-out-in-2025 (3 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: how-many-people-will-trump-deport-in-2025 (9 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: will-trump-deport-750000-or-more-people-in-2025 (1 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: uk-election-called-by (4 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: china-x-india-military-clash-by-december-31 (3 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: natoeu-troops-fighting-in-ukraine-in-2025 (2 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: starmer-out-in-2025 (4 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: how-much-spending-will-elon-and-doge-cut-in-2025 (6 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: will-elon-cut-the-budget-by-at-least-10-in-2025 (1 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: will-elon-cut-the-budget-by-at-least-5-in-2025 (1 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: ukraine-recognizes-russian-sovereignty-over-ukrainian-territory-in-2025 (3 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: ukraine-election-called-in-2025 (3 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: will-any-country-leave-nato-in-2025 (2 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: ukraine-election-held-in-2025 (3 markets)
+[2026-02-09T09:26:08.481Z]    ✅ Found via search: will-gta-6-cost-100 (1 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: rojas-guilty-in-texas-illegal-abortion-case (1 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: senator-eichorn-guilty-of-soliciting-a-child (1 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: bitboy-convicted (1 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: negative-gdp-growth-in-2025 (1 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: taylor-swift-pregnant-in-2025 (3 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: mike-johnson-out-as-speaker-by (4 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: how-much-revenue-will-the-us-raise-from-tariffs-in-2025 (6 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: will-tariffs-generate-250b-in-2025 (1 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: what-will-happen-before-gta-vi (9 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: gta-vi-released-before-june-2026 (1 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: harvey-weinstein-prison-time (6 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: will-openai-launch-a-consumer-hardware-product-by (3 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: will-russia-capture-kostyantynivka-by (9 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: spain-snap-election-called-by (2 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: us-x-russia-military-clash-by (4 markets)
+[2026-02-09T09:26:08.482Z]    ✅ Found via search: will-russia-invade-a-nato-country-in-2025 (2 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: trump-eliminates-capital-gains-tax-on-crypto-in-2025 (2 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: israel-and-syria-normalize-relations-in-2025 (3 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: will-russia-capture-sumy-before-october (3 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: pumpfun-airdop-by (8 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: next-prime-minister-of-the-netherlands (29 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: 2026-fifa-world-cup-which-countries-qualify (33 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: 2026-nhl-stanley-cup-champion (32 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: 2026-nba-champion (30 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: hyperliquid-airdop-by (4 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: israel-x-iran-ceasefire-broken-by (11 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: who-will-perform-at-super-bowl-halftime-show (51 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: megaeth-market-cap-fdv-one-day-after-launch (6 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: megaeth-airdrop-by (7 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: 2026-fifa-world-cup-winner-595 (60 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: us-recognize-somaliland-in-2025-737 (2 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: xi-jinping-out-before-2027 (1 markets)
+[2026-02-09T09:26:08.483Z]    ✅ Found via search: democratic-presidential-nominee-2028 (128 markets)
+[2026-02-09T09:26:08.484Z] 📬 Found 615 total market(s)
+[2026-02-09T09:26:08.484Z] 📊 Grouped into 64 event(s)
+[2026-02-09T09:26:08.484Z] 
+🔍 Analyzing event: highest-temperature-in-nyc-on-february-9-2026
+[2026-02-09T09:26:08.484Z]    City: New York City
+[2026-02-09T09:26:08.485Z]    Date: 2/9/2026
+[2026-02-09T09:26:08.485Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:08.655Z]    📅 NOAA Forecast:
+[2026-02-09T09:26:08.656Z]    👉 Monday: 30°F - Sunny
+[2026-02-09T09:26:08.656Z]       Tuesday: 37°F - Mostly Cloudy then Slight Chance Light Snow
+[2026-02-09T09:26:08.656Z]    🌡️  Forecast high: 30°F
+[2026-02-09T09:26:08.656Z]    💰 Available markets:
+[2026-02-09T09:26:08.789Z]       23°F or below: Ask 0.001 / Bid N/A
+[2026-02-09T09:26:09.140Z]       24-25°F: Ask 0.024 / Bid 0.003
+[2026-02-09T09:26:09.437Z]       26-27°F: Ask 0.019 / Bid 0.012
+[2026-02-09T09:26:09.950Z]       28-29°F: Ask 0.230 / Bid 0.200
+[2026-02-09T09:26:10.235Z]       30-31°F: Ask 0.530 / Bid 0.480
+[2026-02-09T09:26:10.550Z]       32-33°F: Ask 0.320 / Bid 0.230
+[2026-02-09T09:26:10.754Z]    ✅ Forecast matches: 30-31°F
+[2026-02-09T09:26:10.755Z]    📊 Trading at: 53.0%
+[2026-02-09T09:26:10.755Z]    🎯 EDGE DETECTED!
+[2026-02-09T09:26:10.755Z]       Forecast: 30°F → 30-31°F
+[2026-02-09T09:26:10.756Z]       Market price: 53.0%
+[2026-02-09T09:26:10.756Z]       Edge: 50.9%
+[2026-02-09T09:26:10.756Z]    💸 EXECUTING: BUY 3.77 shares @ $0.530
+[2026-02-09T09:26:10.757Z]    ✅ Trade executed (LIVE)
+[2026-02-09T09:26:11.760Z] 
+🔍 Analyzing event: highest-temperature-in-nyc-on-february-10-2026
+[2026-02-09T09:26:11.760Z]    City: New York City
+[2026-02-09T09:26:11.761Z]    Date: 2/10/2026
+[2026-02-09T09:26:11.761Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:11.803Z]    📅 NOAA Forecast:
+[2026-02-09T09:26:11.804Z]       Monday: 30°F - Sunny
+[2026-02-09T09:26:11.804Z]    👉 Tuesday: 37°F - Mostly Cloudy then Slight Chance Light Snow
+[2026-02-09T09:26:11.804Z]    🌡️  Forecast high: 37°F
+[2026-02-09T09:26:11.804Z]    💰 Available markets:
+[2026-02-09T09:26:11.875Z]       25°F or below: Ask 0.005 / Bid 0.001
+[2026-02-09T09:26:12.267Z]       26-27°F: Ask 0.004 / Bid 0.001
+[2026-02-09T09:26:12.537Z]       28-29°F: Ask 0.014 / Bid 0.006
+[2026-02-09T09:26:12.879Z]       30-31°F: Ask 0.011 / Bid 0.008
+[2026-02-09T09:26:13.186Z]       32-33°F: Ask 0.130 / Bid 0.090
+[2026-02-09T09:26:13.458Z]       34-35°F: Ask 0.420 / Bid 0.400
+[2026-02-09T09:26:13.662Z]    ⚠️  Forecast 37°F doesn't match any available bucket
+[2026-02-09T09:26:14.665Z] 
+🔍 Analyzing event: highest-temperature-in-london-on-february-9-2026
+[2026-02-09T09:26:14.665Z]    City: London
+[2026-02-09T09:26:14.666Z]    Date: 2/9/2026
+[2026-02-09T09:26:14.666Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:14.749Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:26:14.749Z]    👉 2/9/2026: High 51.3°F, Low 45.2°F, Precip 60%
+[2026-02-09T09:26:14.750Z]       2/10/2026: High 54.3°F, Low 46.8°F, Precip 70%
+[2026-02-09T09:26:14.750Z]       2/11/2026: High 53.9°F, Low 46.7°F, Precip 50%
+[2026-02-09T09:26:14.750Z]    🌡️  Forecast high: 51.3°F
+[2026-02-09T09:26:14.750Z]    💰 Available markets:
+[2026-02-09T09:26:14.750Z]    ⚠️  Forecast 51.3°F doesn't match any available bucket
+[2026-02-09T09:26:15.753Z] 
+🔍 Analyzing event: highest-temperature-in-london-on-february-10-2026
+[2026-02-09T09:26:15.754Z]    City: London
+[2026-02-09T09:26:15.754Z]    Date: 2/10/2026
+[2026-02-09T09:26:15.754Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:15.777Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:26:15.777Z]       2/9/2026: High 51.3°F, Low 45.2°F, Precip 60%
+[2026-02-09T09:26:15.778Z]    👉 2/10/2026: High 54.3°F, Low 46.8°F, Precip 70%
+[2026-02-09T09:26:15.778Z]       2/11/2026: High 53.9°F, Low 46.7°F, Precip 50%
+[2026-02-09T09:26:15.778Z]    🌡️  Forecast high: 54.3°F
+[2026-02-09T09:26:15.778Z]    💰 Available markets:
+[2026-02-09T09:26:15.778Z]    ⚠️  Forecast 54.3°F doesn't match any available bucket
+[2026-02-09T09:26:16.781Z] 
+🔍 Analyzing event: highest-temperature-in-seoul-on-february-9-2026
+[2026-02-09T09:26:16.781Z]    City: Seoul
+[2026-02-09T09:26:16.782Z]    Date: 2/9/2026
+[2026-02-09T09:26:16.782Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:16.805Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:26:16.806Z]    👉 2/9/2026: High 34.8°F, Low 13.5°F, Precip 0%
+[2026-02-09T09:26:16.806Z]       2/10/2026: High 38.8°F, Low 26.2°F, Precip 40%
+[2026-02-09T09:26:16.806Z]       2/11/2026: High 40.5°F, Low 30.5°F, Precip 10%
+[2026-02-09T09:26:16.806Z]    🌡️  Forecast high: 34.8°F
+[2026-02-09T09:26:16.807Z]    💰 Available markets:
+[2026-02-09T09:26:16.807Z]    ⚠️  Forecast 34.8°F doesn't match any available bucket
+[2026-02-09T09:26:17.809Z] 
+🔍 Analyzing event: highest-temperature-in-seoul-on-february-10-2026
+[2026-02-09T09:26:17.810Z]    City: Seoul
+[2026-02-09T09:26:17.810Z]    Date: 2/10/2026
+[2026-02-09T09:26:17.810Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:17.831Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:26:17.831Z]       2/9/2026: High 34.8°F, Low 13.5°F, Precip 0%
+[2026-02-09T09:26:17.831Z]    👉 2/10/2026: High 38.8°F, Low 26.2°F, Precip 40%
+[2026-02-09T09:26:17.831Z]       2/11/2026: High 40.5°F, Low 30.5°F, Precip 10%
+[2026-02-09T09:26:17.831Z]    🌡️  Forecast high: 38.8°F
+[2026-02-09T09:26:17.832Z]    💰 Available markets:
+[2026-02-09T09:26:17.832Z]    ⚠️  Forecast 38.8°F doesn't match any available bucket
+[2026-02-09T09:26:18.834Z] 
+🔍 Analyzing event: highest-temperature-in-dallas-on-february-9-2026
+[2026-02-09T09:26:18.835Z]    City: Dallas
+[2026-02-09T09:26:18.835Z]    Date: 2/9/2026
+[2026-02-09T09:26:18.835Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:18.908Z]    📅 NOAA Forecast:
+[2026-02-09T09:26:18.909Z]    👉 Monday: 82°F - Mostly Sunny
+[2026-02-09T09:26:18.909Z]       Tuesday: 78°F - Mostly Cloudy
+[2026-02-09T09:26:18.909Z]    🌡️  Forecast high: 82°F
+[2026-02-09T09:26:18.909Z]    💰 Available markets:
+[2026-02-09T09:26:19.414Z]       64-65°F: Ask 0.001 / Bid N/A
+[2026-02-09T09:26:19.705Z]       66-67°F: Ask 0.005 / Bid N/A
+[2026-02-09T09:26:19.989Z]       68-69°F: Ask 0.005 / Bid N/A
+[2026-02-09T09:26:20.258Z]       63°F or below: Ask 0.001 / Bid N/A
+[2026-02-09T09:26:20.519Z]       70-71°F: Ask 0.001 / Bid N/A
+[2026-02-09T09:26:21.033Z]       72-73°F: Ask 0.005 / Bid 0.001
+[2026-02-09T09:26:21.236Z]    ⚠️  Forecast 82°F doesn't match any available bucket
+[2026-02-09T09:26:22.238Z] 
+🔍 Analyzing event: highest-temperature-in-dallas-on-february-10-2026
+[2026-02-09T09:26:22.239Z]    City: Dallas
+[2026-02-09T09:26:22.239Z]    Date: 2/10/2026
+[2026-02-09T09:26:22.240Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:22.281Z]    📅 NOAA Forecast:
+[2026-02-09T09:26:22.282Z]       Monday: 82°F - Mostly Sunny
+[2026-02-09T09:26:22.282Z]    👉 Tuesday: 78°F - Mostly Cloudy
+[2026-02-09T09:26:22.282Z]    🌡️  Forecast high: 78°F
+[2026-02-09T09:26:22.282Z]    💰 Available markets:
+[2026-02-09T09:26:22.354Z]       61°F or below: Ask 0.005 / Bid 0.001
+[2026-02-09T09:26:22.617Z]       62-63°F: Ask 0.005 / Bid 0.002
+[2026-02-09T09:26:22.898Z]       64-65°F: Ask 0.007 / Bid 0.005
+[2026-02-09T09:26:23.170Z]       66-67°F: Ask 0.009 / Bid 0.004
+[2026-02-09T09:26:23.436Z]       68-69°F: Ask 0.028 / Bid 0.010
+[2026-02-09T09:26:23.805Z]       70-71°F: Ask 0.034 / Bid 0.022
+[2026-02-09T09:26:24.009Z]    ⚠️  Forecast 78°F doesn't match any available bucket
+[2026-02-09T09:26:25.010Z] 
+🔍 Analyzing event: highest-temperature-in-seattle-on-february-9-2026
+[2026-02-09T09:26:25.012Z]    City: Seattle
+[2026-02-09T09:26:25.012Z]    Date: 2/9/2026
+[2026-02-09T09:26:25.012Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:25.053Z]    📅 NOAA Forecast:
+[2026-02-09T09:26:25.053Z]    👉 Monday: 50°F - Light Rain Likely
+[2026-02-09T09:26:25.053Z]       Tuesday: 52°F - Mostly Sunny
+[2026-02-09T09:26:25.053Z]    🌡️  Forecast high: 50°F
+[2026-02-09T09:26:25.053Z]    💰 Available markets:
+[2026-02-09T09:26:25.139Z]       42-43°F: Ask 0.016 / Bid 0.003
+[2026-02-09T09:26:25.530Z]       44-45°F: Ask 0.021 / Bid 0.006
+[2026-02-09T09:26:26.151Z]       46-47°F: Ask 0.160 / Bid 0.120
+[2026-02-09T09:26:26.679Z]       48-49°F: Ask 0.520 / Bid 0.430
+[2026-02-09T09:26:27.202Z]       50-51°F: Ask 0.410 / Bid 0.370
+[2026-02-09T09:26:27.717Z]       41°F or below: Ask 0.005 / Bid 0.001
+[2026-02-09T09:26:27.919Z]    ✅ Forecast matches: 50-51°F
+[2026-02-09T09:26:27.919Z]    📊 Trading at: 41.0%
+[2026-02-09T09:26:27.920Z]    🎯 EDGE DETECTED!
+[2026-02-09T09:26:27.920Z]       Forecast: 50°F → 50-51°F
+[2026-02-09T09:26:27.920Z]       Market price: 41.0%
+[2026-02-09T09:26:27.920Z]       Edge: 95.1%
+[2026-02-09T09:26:27.920Z]    💸 EXECUTING: BUY 4.88 shares @ $0.410
+[2026-02-09T09:26:27.921Z]    ✅ Trade executed (LIVE)
+[2026-02-09T09:26:28.922Z] 
+🔍 Analyzing event: highest-temperature-in-seattle-on-february-10-2026
+[2026-02-09T09:26:28.922Z]    City: Seattle
+[2026-02-09T09:26:28.923Z]    Date: 2/10/2026
+[2026-02-09T09:26:28.923Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:29.049Z]    📅 NOAA Forecast:
+[2026-02-09T09:26:29.050Z]       Monday: 50°F - Light Rain Likely
+[2026-02-09T09:26:29.050Z]    👉 Tuesday: 52°F - Mostly Sunny
+[2026-02-09T09:26:29.050Z]    🌡️  Forecast high: 52°F
+[2026-02-09T09:26:29.050Z]    💰 Available markets:
+[2026-02-09T09:26:29.136Z]       44-45°F: Ask 0.005 / Bid 0.002
+[2026-02-09T09:26:29.414Z]       46-47°F: Ask 0.025 / Bid 0.012
+[2026-02-09T09:26:29.766Z]       48-49°F: Ask 0.110 / Bid 0.090
+[2026-02-09T09:26:30.146Z]       50-51°F: Ask 0.250 / Bid 0.240
+[2026-02-09T09:26:30.411Z]       41°F or below: Ask 0.006 / Bid 0.004
+[2026-02-09T09:26:30.692Z]       42-43°F: Ask 0.005 / Bid 0.004
+[2026-02-09T09:26:30.916Z]    ⚠️  Forecast 52°F doesn't match any available bucket
+[2026-02-09T09:26:31.918Z] 
+🔍 Analyzing event: highest-temperature-in-ankara-on-february-9-2026
+[2026-02-09T09:26:31.918Z]    City: Ankara
+[2026-02-09T09:26:31.919Z]    Date: 2/9/2026
+[2026-02-09T09:26:31.919Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:32.005Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:26:32.006Z]    👉 2/9/2026: High 48.4°F, Low 40.4°F, Precip 90%
+[2026-02-09T09:26:32.006Z]       2/10/2026: High 43.5°F, Low 36.6°F, Precip 60%
+[2026-02-09T09:26:32.006Z]       2/11/2026: High 45.8°F, Low 35.2°F, Precip 38%
+[2026-02-09T09:26:32.006Z]    🌡️  Forecast high: 48.4°F
+[2026-02-09T09:26:32.006Z]    💰 Available markets:
+[2026-02-09T09:26:32.006Z]    ⚠️  Forecast 48.4°F doesn't match any available bucket
+[2026-02-09T09:26:33.008Z] 
+🔍 Analyzing event: highest-temperature-in-ankara-on-february-10-2026
+[2026-02-09T09:26:33.008Z]    City: Ankara
+[2026-02-09T09:26:33.009Z]    Date: 2/10/2026
+[2026-02-09T09:26:33.009Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:33.030Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:26:33.030Z]       2/9/2026: High 48.4°F, Low 40.4°F, Precip 90%
+[2026-02-09T09:26:33.031Z]    👉 2/10/2026: High 43.5°F, Low 36.6°F, Precip 60%
+[2026-02-09T09:26:33.031Z]       2/11/2026: High 45.8°F, Low 35.2°F, Precip 38%
+[2026-02-09T09:26:33.031Z]    🌡️  Forecast high: 43.5°F
+[2026-02-09T09:26:33.031Z]    💰 Available markets:
+[2026-02-09T09:26:33.031Z]    ⚠️  Forecast 43.5°F doesn't match any available bucket
+[2026-02-09T09:26:34.032Z] 
+🔍 Analyzing event: highest-temperature-in-wellington-on-february-9-2026
+[2026-02-09T09:26:34.033Z]    City: Wellington
+[2026-02-09T09:26:34.033Z]    Date: 2/9/2026
+[2026-02-09T09:26:34.033Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:34.054Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:26:34.055Z]    👉 2/9/2026: High 64.9°F, Low 59°F, Precip 0%
+[2026-02-09T09:26:34.055Z]       2/10/2026: High 65.7°F, Low 60.7°F, Precip 0%
+[2026-02-09T09:26:34.055Z]       2/11/2026: High 69.6°F, Low 63°F, Precip 0%
+[2026-02-09T09:26:34.055Z]    🌡️  Forecast high: 64.9°F
+[2026-02-09T09:26:34.056Z]    💰 Available markets:
+[2026-02-09T09:26:34.056Z]    ⚠️  Forecast 64.9°F doesn't match any available bucket
+[2026-02-09T09:26:35.057Z] 
+🔍 Analyzing event: highest-temperature-in-wellington-on-february-10-2026
+[2026-02-09T09:26:35.058Z]    City: Wellington
+[2026-02-09T09:26:35.058Z]    Date: 2/10/2026
+[2026-02-09T09:26:35.058Z]    Markets: 7 temperature ranges
+[2026-02-09T09:26:35.079Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:26:35.079Z]       2/9/2026: High 64.9°F, Low 59°F, Precip 0%
+[2026-02-09T09:26:35.080Z]    👉 2/10/2026: High 65.7°F, Low 60.7°F, Precip 0%
+[2026-02-09T09:26:35.080Z]       2/11/2026: High 69.6°F, Low 63°F, Precip 0%
+[2026-02-09T09:26:35.080Z]    🌡️  Forecast high: 65.7°F
+[2026-02-09T09:26:35.080Z]    💰 Available markets:
+[2026-02-09T09:26:35.080Z]    ⚠️  Forecast 65.7°F doesn't match any available bucket
+[2026-02-09T09:26:36.081Z] 
+⚠️  Skipping microstrategy-sell-any-bitcoin-in-2025: no city info
+[2026-02-09T09:26:36.082Z] 
+⚠️  Skipping kraken-ipo-in-2025: no city info
+[2026-02-09T09:26:36.082Z] 
+⚠️  Skipping macron-out-in-2025: no city info
+[2026-02-09T09:26:36.082Z] 
+⚠️  Skipping how-many-people-will-trump-deport-in-2025: no city info
+[2026-02-09T09:26:36.082Z] 
+⚠️  Skipping will-trump-deport-750000-or-more-people-in-2025: no city info
+[2026-02-09T09:26:36.082Z] 
+⚠️  Skipping uk-election-called-by: no city info
+[2026-02-09T09:26:36.083Z] 
+⚠️  Skipping china-x-india-military-clash-by-december-31: no city info
+[2026-02-09T09:26:36.083Z] 
+⚠️  Skipping natoeu-troops-fighting-in-ukraine-in-2025: no city info
+[2026-02-09T09:26:36.083Z] 
+⚠️  Skipping starmer-out-in-2025: no city info
+[2026-02-09T09:26:36.083Z] 
+⚠️  Skipping how-much-spending-will-elon-and-doge-cut-in-2025: no city info
+[2026-02-09T09:26:36.083Z] 
+⚠️  Skipping will-elon-cut-the-budget-by-at-least-10-in-2025: no city info
+[2026-02-09T09:26:36.083Z] 
+⚠️  Skipping will-elon-cut-the-budget-by-at-least-5-in-2025: no city info
+[2026-02-09T09:26:36.083Z] 
+⚠️  Skipping ukraine-recognizes-russian-sovereignty-over-ukrainian-territory-in-2025: no city info
+[2026-02-09T09:26:36.083Z] 
+⚠️  Skipping ukraine-election-called-in-2025: no city info
+[2026-02-09T09:26:36.083Z] 
+⚠️  Skipping will-any-country-leave-nato-in-2025: no city info
+[2026-02-09T09:26:36.084Z] 
+⚠️  Skipping ukraine-election-held-in-2025: no city info
+[2026-02-09T09:26:36.084Z] 
+⚠️  Skipping will-gta-6-cost-100: no city info
+[2026-02-09T09:26:36.084Z] 
+⚠️  Skipping rojas-guilty-in-texas-illegal-abortion-case: no city info
+[2026-02-09T09:26:36.084Z] 
+⚠️  Skipping senator-eichorn-guilty-of-soliciting-a-child: no city info
+[2026-02-09T09:26:36.084Z] 
+⚠️  Skipping bitboy-convicted: no city info
+[2026-02-09T09:26:36.084Z] 
+⚠️  Skipping negative-gdp-growth-in-2025: no city info
+[2026-02-09T09:26:36.084Z] 
+⚠️  Skipping taylor-swift-pregnant-in-2025: no city info
+[2026-02-09T09:26:36.084Z] 
+⚠️  Skipping mike-johnson-out-as-speaker-by: no city info
+[2026-02-09T09:26:36.084Z] 
+⚠️  Skipping how-much-revenue-will-the-us-raise-from-tariffs-in-2025: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping will-tariffs-generate-250b-in-2025: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping what-will-happen-before-gta-vi: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping gta-vi-released-before-june-2026: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping harvey-weinstein-prison-time: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping will-openai-launch-a-consumer-hardware-product-by: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping will-russia-capture-kostyantynivka-by: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping spain-snap-election-called-by: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping us-x-russia-military-clash-by: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping will-russia-invade-a-nato-country-in-2025: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping trump-eliminates-capital-gains-tax-on-crypto-in-2025: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping israel-and-syria-normalize-relations-in-2025: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping will-russia-capture-sumy-before-october: no city info
+[2026-02-09T09:26:36.085Z] 
+⚠️  Skipping pumpfun-airdop-by: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping next-prime-minister-of-the-netherlands: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping 2026-fifa-world-cup-which-countries-qualify: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping 2026-nhl-stanley-cup-champion: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping 2026-nba-champion: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping hyperliquid-airdop-by: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping israel-x-iran-ceasefire-broken-by: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping who-will-perform-at-super-bowl-halftime-show: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping megaeth-market-cap-fdv-one-day-after-launch: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping megaeth-airdrop-by: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping 2026-fifa-world-cup-winner-595: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping us-recognize-somaliland-in-2025-737: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping xi-jinping-out-before-2027: no city info
+[2026-02-09T09:26:36.086Z] 
+⚠️  Skipping democratic-presidential-nominee-2028: no city info
+[2026-02-09T09:26:36.086Z] 
+📊 Stats: 1 scans | 615 markets | 2 edges | 2 trades | $4.00 spent
+[2026-02-09T09:26:36.087Z] 📂 Open positions: 2
+[2026-02-09T09:26:36.087Z]    1. Will the highest temperature in New York City be b... @ $0.530
+[2026-02-09T09:26:36.087Z]    2. Will the highest temperature in Seattle be between... @ $0.410
+[2026-02-09T09:26:36.087Z] 
+⏳ Waiting 120s until next scan...
+disconnected code 1006 reason 
+[2026-02-09T09:28:36.089Z] 
+============================================================
+[2026-02-09T09:28:36.091Z] 🔄 Scan #2 - 10:28:36
+[2026-02-09T09:28:36.091Z] ============================================================
+[2026-02-09T09:28:36.091Z] 🔍 Searching for temperature markets...
+[2026-02-09T09:28:36.235Z]    ✅ Found: highest-temperature-in-nyc-on-february-9-2026 (7 markets)
+[2026-02-09T09:28:36.638Z]    ✅ Found: highest-temperature-in-nyc-on-february-10-2026 (7 markets)
+[2026-02-09T09:28:37.375Z]    ✅ Found: highest-temperature-in-london-on-february-9-2026 (7 markets)
+[2026-02-09T09:28:37.724Z]    ✅ Found: highest-temperature-in-london-on-february-10-2026 (7 markets)
+[2026-02-09T09:28:38.444Z]    ✅ Found: highest-temperature-in-seoul-on-february-9-2026 (7 markets)
+[2026-02-09T09:28:38.794Z]    ✅ Found: highest-temperature-in-seoul-on-february-10-2026 (7 markets)
+[2026-02-09T09:28:39.508Z]    ✅ Found: highest-temperature-in-dallas-on-february-9-2026 (7 markets)
+[2026-02-09T09:28:40.128Z]    ✅ Found: highest-temperature-in-dallas-on-february-10-2026 (7 markets)
+[2026-02-09T09:28:40.829Z]    ✅ Found: highest-temperature-in-seattle-on-february-9-2026 (7 markets)
+[2026-02-09T09:28:41.245Z]    ✅ Found: highest-temperature-in-seattle-on-february-10-2026 (7 markets)
+[2026-02-09T09:28:42.286Z]    ✅ Found: highest-temperature-in-ankara-on-february-9-2026 (7 markets)
+[2026-02-09T09:28:42.759Z]    ✅ Found: highest-temperature-in-ankara-on-february-10-2026 (7 markets)
+[2026-02-09T09:28:43.518Z]    ✅ Found: highest-temperature-in-wellington-on-february-9-2026 (7 markets)
+[2026-02-09T09:28:43.874Z]    ✅ Found: highest-temperature-in-wellington-on-february-10-2026 (7 markets)
+[2026-02-09T09:28:44.515Z] 🔍 Doing text search for additional markets...
+[2026-02-09T09:28:45.103Z]    ✅ Found via search: microstrategy-sell-any-bitcoin-in-2025 (4 markets)
+[2026-02-09T09:28:45.104Z]    ✅ Found via search: kraken-ipo-in-2025 (3 markets)
+[2026-02-09T09:28:45.104Z]    ✅ Found via search: macron-out-in-2025 (3 markets)
+[2026-02-09T09:28:45.104Z]    ✅ Found via search: how-many-people-will-trump-deport-in-2025 (9 markets)
+[2026-02-09T09:28:45.104Z]    ✅ Found via search: will-trump-deport-750000-or-more-people-in-2025 (1 markets)
+[2026-02-09T09:28:45.104Z]    ✅ Found via search: uk-election-called-by (4 markets)
+[2026-02-09T09:28:45.104Z]    ✅ Found via search: china-x-india-military-clash-by-december-31 (3 markets)
+[2026-02-09T09:28:45.104Z]    ✅ Found via search: natoeu-troops-fighting-in-ukraine-in-2025 (2 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: starmer-out-in-2025 (4 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: how-much-spending-will-elon-and-doge-cut-in-2025 (6 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: will-elon-cut-the-budget-by-at-least-10-in-2025 (1 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: will-elon-cut-the-budget-by-at-least-5-in-2025 (1 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: ukraine-recognizes-russian-sovereignty-over-ukrainian-territory-in-2025 (3 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: ukraine-election-called-in-2025 (3 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: will-any-country-leave-nato-in-2025 (2 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: ukraine-election-held-in-2025 (3 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: will-gta-6-cost-100 (1 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: rojas-guilty-in-texas-illegal-abortion-case (1 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: senator-eichorn-guilty-of-soliciting-a-child (1 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: bitboy-convicted (1 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: negative-gdp-growth-in-2025 (1 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: taylor-swift-pregnant-in-2025 (3 markets)
+[2026-02-09T09:28:45.105Z]    ✅ Found via search: mike-johnson-out-as-speaker-by (4 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: how-much-revenue-will-the-us-raise-from-tariffs-in-2025 (6 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: will-tariffs-generate-250b-in-2025 (1 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: what-will-happen-before-gta-vi (9 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: gta-vi-released-before-june-2026 (1 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: harvey-weinstein-prison-time (6 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: will-openai-launch-a-consumer-hardware-product-by (3 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: will-russia-capture-kostyantynivka-by (9 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: spain-snap-election-called-by (2 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: us-x-russia-military-clash-by (4 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: will-russia-invade-a-nato-country-in-2025 (2 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: trump-eliminates-capital-gains-tax-on-crypto-in-2025 (2 markets)
+[2026-02-09T09:28:45.106Z]    ✅ Found via search: israel-and-syria-normalize-relations-in-2025 (3 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: will-russia-capture-sumy-before-october (3 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: pumpfun-airdop-by (8 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: next-prime-minister-of-the-netherlands (29 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: 2026-fifa-world-cup-which-countries-qualify (33 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: 2026-nhl-stanley-cup-champion (32 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: 2026-nba-champion (30 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: hyperliquid-airdop-by (4 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: israel-x-iran-ceasefire-broken-by (11 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: who-will-perform-at-super-bowl-halftime-show (51 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: megaeth-market-cap-fdv-one-day-after-launch (6 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: megaeth-airdrop-by (7 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: 2026-fifa-world-cup-winner-595 (60 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: us-recognize-somaliland-in-2025-737 (2 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: xi-jinping-out-before-2027 (1 markets)
+[2026-02-09T09:28:45.107Z]    ✅ Found via search: democratic-presidential-nominee-2028 (128 markets)
+[2026-02-09T09:28:45.108Z] 📬 Found 615 total market(s)
+[2026-02-09T09:28:45.108Z] 📊 Grouped into 64 event(s)
+[2026-02-09T09:28:45.108Z] 
+🔍 Analyzing event: highest-temperature-in-nyc-on-february-9-2026
+[2026-02-09T09:28:45.108Z]    City: New York City
+[2026-02-09T09:28:45.108Z]    Date: 2/9/2026
+[2026-02-09T09:28:45.108Z]    Markets: 7 temperature ranges
+[2026-02-09T09:28:45.181Z]    📅 NOAA Forecast:
+[2026-02-09T09:28:45.181Z]    👉 Monday: 30°F - Sunny
+[2026-02-09T09:28:45.181Z]       Tuesday: 37°F - Mostly Cloudy then Slight Chance Light Snow
+[2026-02-09T09:28:45.181Z]    🌡️  Forecast high: 30°F
+[2026-02-09T09:28:45.182Z]    💰 Available markets:
+[2026-02-09T09:28:45.368Z]       23°F or below: Ask 0.001 / Bid N/A
+[2026-02-09T09:28:45.628Z]       24-25°F: Ask 0.024 / Bid 0.003
+[2026-02-09T09:28:45.938Z]       26-27°F: Ask 0.019 / Bid 0.012
+[2026-02-09T09:28:46.235Z]       28-29°F: Ask 0.230 / Bid 0.200
+[2026-02-09T09:28:46.510Z]       30-31°F: Ask 0.530 / Bid 0.470
+[2026-02-09T09:28:47.291Z]       32-33°F: Ask 0.320 / Bid 0.230
+[2026-02-09T09:28:47.492Z]    ✅ Forecast matches: 30-31°F
+[2026-02-09T09:28:47.493Z]    📊 Trading at: 53.0%
+[2026-02-09T09:28:47.493Z]    🎯 EDGE DETECTED!
+[2026-02-09T09:28:47.493Z]       Forecast: 30°F → 30-31°F
+[2026-02-09T09:28:47.493Z]       Market price: 53.0%
+[2026-02-09T09:28:47.494Z]       Edge: 50.9%
+[2026-02-09T09:28:47.494Z]    💸 EXECUTING: BUY 3.77 shares @ $0.530
+[2026-02-09T09:28:47.494Z]    ✅ Trade executed (LIVE)
+[2026-02-09T09:28:48.495Z] 
+🔍 Analyzing event: highest-temperature-in-nyc-on-february-10-2026
+[2026-02-09T09:28:48.496Z]    City: New York City
+[2026-02-09T09:28:48.496Z]    Date: 2/10/2026
+[2026-02-09T09:28:48.496Z]    Markets: 7 temperature ranges
+[2026-02-09T09:28:48.550Z]    📅 NOAA Forecast:
+[2026-02-09T09:28:48.551Z]       Monday: 30°F - Sunny
+[2026-02-09T09:28:48.551Z]    👉 Tuesday: 37°F - Mostly Cloudy then Slight Chance Light Snow
+[2026-02-09T09:28:48.551Z]    🌡️  Forecast high: 37°F
+[2026-02-09T09:28:48.551Z]    💰 Available markets:
+[2026-02-09T09:28:48.614Z]       25°F or below: Ask 0.005 / Bid 0.001
+[2026-02-09T09:28:48.898Z]       26-27°F: Ask 0.004 / Bid 0.001
+[2026-02-09T09:28:49.161Z]       28-29°F: Ask 0.014 / Bid 0.006
+[2026-02-09T09:28:49.445Z]       30-31°F: Ask 0.011 / Bid 0.008
+[2026-02-09T09:28:49.972Z]       32-33°F: Ask 0.130 / Bid 0.090
+[2026-02-09T09:28:50.236Z]       34-35°F: Ask 0.420 / Bid 0.400
+[2026-02-09T09:28:50.438Z]    ⚠️  Forecast 37°F doesn't match any available bucket
+[2026-02-09T09:28:51.440Z] 
+🔍 Analyzing event: highest-temperature-in-london-on-february-9-2026
+[2026-02-09T09:28:51.441Z]    City: London
+[2026-02-09T09:28:51.441Z]    Date: 2/9/2026
+[2026-02-09T09:28:51.441Z]    Markets: 7 temperature ranges
+[2026-02-09T09:28:51.532Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:28:51.532Z]    👉 2/9/2026: High 51.3°F, Low 45.2°F, Precip 60%
+[2026-02-09T09:28:51.532Z]       2/10/2026: High 54.3°F, Low 46.8°F, Precip 70%
+[2026-02-09T09:28:51.533Z]       2/11/2026: High 53.9°F, Low 46.7°F, Precip 50%
+[2026-02-09T09:28:51.533Z]    🌡️  Forecast high: 51.3°F
+[2026-02-09T09:28:51.533Z]    💰 Available markets:
+[2026-02-09T09:28:51.533Z]    ⚠️  Forecast 51.3°F doesn't match any available bucket
+[2026-02-09T09:28:52.534Z] 
+🔍 Analyzing event: highest-temperature-in-london-on-february-10-2026
+[2026-02-09T09:28:52.534Z]    City: London
+[2026-02-09T09:28:52.535Z]    Date: 2/10/2026
+[2026-02-09T09:28:52.535Z]    Markets: 7 temperature ranges
+[2026-02-09T09:28:52.558Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:28:52.559Z]       2/9/2026: High 51.3°F, Low 45.2°F, Precip 60%
+[2026-02-09T09:28:52.559Z]    👉 2/10/2026: High 54.3°F, Low 46.8°F, Precip 70%
+[2026-02-09T09:28:52.559Z]       2/11/2026: High 53.9°F, Low 46.7°F, Precip 50%
+[2026-02-09T09:28:52.559Z]    🌡️  Forecast high: 54.3°F
+[2026-02-09T09:28:52.559Z]    💰 Available markets:
+[2026-02-09T09:28:52.559Z]    ⚠️  Forecast 54.3°F doesn't match any available bucket
+[2026-02-09T09:28:53.561Z] 
+🔍 Analyzing event: highest-temperature-in-seoul-on-february-9-2026
+[2026-02-09T09:28:53.562Z]    City: Seoul
+[2026-02-09T09:28:53.562Z]    Date: 2/9/2026
+[2026-02-09T09:28:53.563Z]    Markets: 7 temperature ranges
+[2026-02-09T09:28:53.582Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:28:53.583Z]    👉 2/9/2026: High 34.8°F, Low 13.5°F, Precip 0%
+[2026-02-09T09:28:53.583Z]       2/10/2026: High 38.8°F, Low 26.2°F, Precip 40%
+[2026-02-09T09:28:53.583Z]       2/11/2026: High 40.5°F, Low 30.5°F, Precip 10%
+[2026-02-09T09:28:53.583Z]    🌡️  Forecast high: 34.8°F
+[2026-02-09T09:28:53.583Z]    💰 Available markets:
+[2026-02-09T09:28:53.584Z]    ⚠️  Forecast 34.8°F doesn't match any available bucket
+[2026-02-09T09:28:54.585Z] 
+🔍 Analyzing event: highest-temperature-in-seoul-on-february-10-2026
+[2026-02-09T09:28:54.585Z]    City: Seoul
+[2026-02-09T09:28:54.586Z]    Date: 2/10/2026
+[2026-02-09T09:28:54.586Z]    Markets: 7 temperature ranges
+[2026-02-09T09:28:54.606Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:28:54.607Z]       2/9/2026: High 34.8°F, Low 13.5°F, Precip 0%
+[2026-02-09T09:28:54.607Z]    👉 2/10/2026: High 38.8°F, Low 26.2°F, Precip 40%
+[2026-02-09T09:28:54.607Z]       2/11/2026: High 40.5°F, Low 30.5°F, Precip 10%
+[2026-02-09T09:28:54.607Z]    🌡️  Forecast high: 38.8°F
+[2026-02-09T09:28:54.607Z]    💰 Available markets:
+[2026-02-09T09:28:54.607Z]    ⚠️  Forecast 38.8°F doesn't match any available bucket
+[2026-02-09T09:28:55.608Z] 
+🔍 Analyzing event: highest-temperature-in-dallas-on-february-9-2026
+[2026-02-09T09:28:55.609Z]    City: Dallas
+[2026-02-09T09:28:55.609Z]    Date: 2/9/2026
+[2026-02-09T09:28:55.609Z]    Markets: 7 temperature ranges
+[2026-02-09T09:28:55.681Z]    📅 NOAA Forecast:
+[2026-02-09T09:28:55.681Z]    👉 Monday: 82°F - Mostly Sunny
+[2026-02-09T09:28:55.681Z]       Tuesday: 78°F - Mostly Cloudy
+[2026-02-09T09:28:55.681Z]    🌡️  Forecast high: 82°F
+[2026-02-09T09:28:55.682Z]    💰 Available markets:
+[2026-02-09T09:28:55.854Z]       64-65°F: Ask 0.001 / Bid N/A
+[2026-02-09T09:28:56.151Z]       66-67°F: Ask 0.005 / Bid N/A
+[2026-02-09T09:28:56.430Z]       68-69°F: Ask 0.005 / Bid N/A
+[2026-02-09T09:28:56.714Z]       63°F or below: Ask 0.001 / Bid N/A
+[2026-02-09T09:28:57.028Z]       70-71°F: Ask 0.001 / Bid N/A
+[2026-02-09T09:28:57.421Z]       72-73°F: Ask 0.005 / Bid 0.001
+[2026-02-09T09:28:57.622Z]    ⚠️  Forecast 82°F doesn't match any available bucket
+[2026-02-09T09:28:58.623Z] 
+🔍 Analyzing event: highest-temperature-in-dallas-on-february-10-2026
+[2026-02-09T09:28:58.624Z]    City: Dallas
+[2026-02-09T09:28:58.624Z]    Date: 2/10/2026
+[2026-02-09T09:28:58.624Z]    Markets: 7 temperature ranges
+[2026-02-09T09:28:58.663Z]    📅 NOAA Forecast:
+[2026-02-09T09:28:58.663Z]       Monday: 82°F - Mostly Sunny
+[2026-02-09T09:28:58.664Z]    👉 Tuesday: 78°F - Mostly Cloudy
+[2026-02-09T09:28:58.664Z]    🌡️  Forecast high: 78°F
+[2026-02-09T09:28:58.664Z]    💰 Available markets:
+[2026-02-09T09:28:58.724Z]       61°F or below: Ask 0.005 / Bid 0.001
+[2026-02-09T09:28:59.136Z]       62-63°F: Ask 0.005 / Bid 0.002
+[2026-02-09T09:28:59.400Z]       64-65°F: Ask 0.007 / Bid 0.005
+[2026-02-09T09:28:59.671Z]       66-67°F: Ask 0.009 / Bid 0.004
+[2026-02-09T09:28:59.934Z]       68-69°F: Ask 0.039 / Bid 0.010
+[2026-02-09T09:29:00.196Z]       70-71°F: Ask 0.034 / Bid 0.022
+[2026-02-09T09:29:00.396Z]    ⚠️  Forecast 78°F doesn't match any available bucket
+[2026-02-09T09:29:01.398Z] 
+🔍 Analyzing event: highest-temperature-in-seattle-on-february-9-2026
+[2026-02-09T09:29:01.399Z]    City: Seattle
+[2026-02-09T09:29:01.399Z]    Date: 2/9/2026
+[2026-02-09T09:29:01.399Z]    Markets: 7 temperature ranges
+[2026-02-09T09:29:01.436Z]    📅 NOAA Forecast:
+[2026-02-09T09:29:01.436Z]    👉 Monday: 50°F - Light Rain Likely
+[2026-02-09T09:29:01.436Z]       Tuesday: 52°F - Mostly Sunny
+[2026-02-09T09:29:01.436Z]    🌡️  Forecast high: 50°F
+[2026-02-09T09:29:01.436Z]    💰 Available markets:
+[2026-02-09T09:29:01.520Z]       42-43°F: Ask 0.016 / Bid 0.003
+[2026-02-09T09:29:01.785Z]       44-45°F: Ask 0.021 / Bid 0.006
+[2026-02-09T09:29:02.145Z]       46-47°F: Ask 0.160 / Bid 0.120
+[2026-02-09T09:29:02.678Z]       48-49°F: Ask 0.550 / Bid 0.430
+[2026-02-09T09:29:02.939Z]       50-51°F: Ask 0.410 / Bid 0.370
+[2026-02-09T09:29:03.266Z]       41°F or below: Ask 0.005 / Bid 0.001
+[2026-02-09T09:29:03.467Z]    ✅ Forecast matches: 50-51°F
+[2026-02-09T09:29:03.468Z]    📊 Trading at: 41.0%
+[2026-02-09T09:29:03.468Z]    🎯 EDGE DETECTED!
+[2026-02-09T09:29:03.468Z]       Forecast: 50°F → 50-51°F
+[2026-02-09T09:29:03.469Z]       Market price: 41.0%
+[2026-02-09T09:29:03.469Z]       Edge: 95.1%
+[2026-02-09T09:29:03.469Z]    💸 EXECUTING: BUY 4.88 shares @ $0.410
+[2026-02-09T09:29:03.469Z]    ✅ Trade executed (LIVE)
+[2026-02-09T09:29:04.470Z] 
+🔍 Analyzing event: highest-temperature-in-seattle-on-february-10-2026
+[2026-02-09T09:29:04.471Z]    City: Seattle
+[2026-02-09T09:29:04.471Z]    Date: 2/10/2026
+[2026-02-09T09:29:04.471Z]    Markets: 7 temperature ranges
+[2026-02-09T09:29:04.511Z]    📅 NOAA Forecast:
+[2026-02-09T09:29:04.511Z]       Monday: 50°F - Light Rain Likely
+[2026-02-09T09:29:04.511Z]    👉 Tuesday: 52°F - Mostly Sunny
+[2026-02-09T09:29:04.511Z]    🌡️  Forecast high: 52°F
+[2026-02-09T09:29:04.511Z]    💰 Available markets:
+[2026-02-09T09:29:04.578Z]       44-45°F: Ask 0.005 / Bid 0.002
+[2026-02-09T09:29:04.878Z]       46-47°F: Ask 0.025 / Bid 0.012
+[2026-02-09T09:29:05.151Z]       48-49°F: Ask 0.110 / Bid 0.090
+[2026-02-09T09:29:05.684Z]       50-51°F: Ask 0.250 / Bid 0.240
+[2026-02-09T09:29:05.953Z]       41°F or below: Ask 0.006 / Bid 0.004
+[2026-02-09T09:29:06.217Z]       42-43°F: Ask 0.005 / Bid 0.004
+[2026-02-09T09:29:06.419Z]    ⚠️  Forecast 52°F doesn't match any available bucket
+[2026-02-09T09:29:07.420Z] 
+🔍 Analyzing event: highest-temperature-in-ankara-on-february-9-2026
+[2026-02-09T09:29:07.421Z]    City: Ankara
+[2026-02-09T09:29:07.421Z]    Date: 2/9/2026
+[2026-02-09T09:29:07.421Z]    Markets: 7 temperature ranges
+[2026-02-09T09:29:07.512Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:29:07.512Z]    👉 2/9/2026: High 48.4°F, Low 40.4°F, Precip 90%
+[2026-02-09T09:29:07.513Z]       2/10/2026: High 43.5°F, Low 36.6°F, Precip 60%
+[2026-02-09T09:29:07.513Z]       2/11/2026: High 45.8°F, Low 35.2°F, Precip 38%
+[2026-02-09T09:29:07.513Z]    🌡️  Forecast high: 48.4°F
+[2026-02-09T09:29:07.513Z]    💰 Available markets:
+[2026-02-09T09:29:07.513Z]    ⚠️  Forecast 48.4°F doesn't match any available bucket
+[2026-02-09T09:29:08.515Z] 
+🔍 Analyzing event: highest-temperature-in-ankara-on-february-10-2026
+[2026-02-09T09:29:08.515Z]    City: Ankara
+[2026-02-09T09:29:08.515Z]    Date: 2/10/2026
+[2026-02-09T09:29:08.516Z]    Markets: 7 temperature ranges
+[2026-02-09T09:29:08.536Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:29:08.536Z]       2/9/2026: High 48.4°F, Low 40.4°F, Precip 90%
+[2026-02-09T09:29:08.536Z]    👉 2/10/2026: High 43.5°F, Low 36.6°F, Precip 60%
+[2026-02-09T09:29:08.536Z]       2/11/2026: High 45.8°F, Low 35.2°F, Precip 38%
+[2026-02-09T09:29:08.536Z]    🌡️  Forecast high: 43.5°F
+[2026-02-09T09:29:08.536Z]    💰 Available markets:
+[2026-02-09T09:29:08.537Z]    ⚠️  Forecast 43.5°F doesn't match any available bucket
+[2026-02-09T09:29:09.538Z] 
+🔍 Analyzing event: highest-temperature-in-wellington-on-february-9-2026
+[2026-02-09T09:29:09.539Z]    City: Wellington
+[2026-02-09T09:29:09.539Z]    Date: 2/9/2026
+[2026-02-09T09:29:09.539Z]    Markets: 7 temperature ranges
+[2026-02-09T09:29:09.561Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:29:09.561Z]    👉 2/9/2026: High 64.9°F, Low 59°F, Precip 0%
+[2026-02-09T09:29:09.562Z]       2/10/2026: High 65.7°F, Low 60.7°F, Precip 0%
+[2026-02-09T09:29:09.562Z]       2/11/2026: High 69.6°F, Low 63°F, Precip 0%
+[2026-02-09T09:29:09.562Z]    🌡️  Forecast high: 64.9°F
+[2026-02-09T09:29:09.562Z]    💰 Available markets:
+[2026-02-09T09:29:09.562Z]    ⚠️  Forecast 64.9°F doesn't match any available bucket
+[2026-02-09T09:29:10.563Z] 
+🔍 Analyzing event: highest-temperature-in-wellington-on-february-10-2026
+[2026-02-09T09:29:10.564Z]    City: Wellington
+[2026-02-09T09:29:10.564Z]    Date: 2/10/2026
+[2026-02-09T09:29:10.564Z]    Markets: 7 temperature ranges
+[2026-02-09T09:29:10.593Z]    📅 Open-Meteo Forecast:
+[2026-02-09T09:29:10.593Z]       2/9/2026: High 64.9°F, Low 59°F, Precip 0%
+[2026-02-09T09:29:10.593Z]    👉 2/10/2026: High 65.7°F, Low 60.7°F, Precip 0%
+[2026-02-09T09:29:10.593Z]       2/11/2026: High 69.6°F, Low 63°F, Precip 0%
+[2026-02-09T09:29:10.594Z]    🌡️  Forecast high: 65.7°F
+[2026-02-09T09:29:10.594Z]    💰 Available markets:
+[2026-02-09T09:29:10.594Z]    ⚠️  Forecast 65.7°F doesn't match any available bucket
+[2026-02-09T09:29:11.595Z] 
+⚠️  Skipping microstrategy-sell-any-bitcoin-in-2025: no city info
+[2026-02-09T09:29:11.595Z] 
+⚠️  Skipping kraken-ipo-in-2025: no city info
+[2026-02-09T09:29:11.596Z] 
+⚠️  Skipping macron-out-in-2025: no city info
+[2026-02-09T09:29:11.596Z] 
+⚠️  Skipping how-many-people-will-trump-deport-in-2025: no city info
+[2026-02-09T09:29:11.596Z] 
+⚠️  Skipping will-trump-deport-750000-or-more-people-in-2025: no city info
+[2026-02-09T09:29:11.596Z] 
+⚠️  Skipping uk-election-called-by: no city info
+[2026-02-09T09:29:11.596Z] 
+⚠️  Skipping china-x-india-military-clash-by-december-31: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping natoeu-troops-fighting-in-ukraine-in-2025: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping starmer-out-in-2025: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping how-much-spending-will-elon-and-doge-cut-in-2025: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping will-elon-cut-the-budget-by-at-least-10-in-2025: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping will-elon-cut-the-budget-by-at-least-5-in-2025: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping ukraine-recognizes-russian-sovereignty-over-ukrainian-territory-in-2025: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping ukraine-election-called-in-2025: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping will-any-country-leave-nato-in-2025: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping ukraine-election-held-in-2025: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping will-gta-6-cost-100: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping rojas-guilty-in-texas-illegal-abortion-case: no city info
+[2026-02-09T09:29:11.597Z] 
+⚠️  Skipping senator-eichorn-guilty-of-soliciting-a-child: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping bitboy-convicted: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping negative-gdp-growth-in-2025: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping taylor-swift-pregnant-in-2025: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping mike-johnson-out-as-speaker-by: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping how-much-revenue-will-the-us-raise-from-tariffs-in-2025: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping will-tariffs-generate-250b-in-2025: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping what-will-happen-before-gta-vi: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping gta-vi-released-before-june-2026: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping harvey-weinstein-prison-time: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping will-openai-launch-a-consumer-hardware-product-by: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping will-russia-capture-kostyantynivka-by: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping spain-snap-election-called-by: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping us-x-russia-military-clash-by: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping will-russia-invade-a-nato-country-in-2025: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping trump-eliminates-capital-gains-tax-on-crypto-in-2025: no city info
+[2026-02-09T09:29:11.598Z] 
+⚠️  Skipping israel-and-syria-normalize-relations-in-2025: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping will-russia-capture-sumy-before-october: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping pumpfun-airdop-by: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping next-prime-minister-of-the-netherlands: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping 2026-fifa-world-cup-which-countries-qualify: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping 2026-nhl-stanley-cup-champion: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping 2026-nba-champion: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping hyperliquid-airdop-by: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping israel-x-iran-ceasefire-broken-by: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping who-will-perform-at-super-bowl-halftime-show: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping megaeth-market-cap-fdv-one-day-after-launch: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping megaeth-airdrop-by: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping 2026-fifa-world-cup-winner-595: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping us-recognize-somaliland-in-2025-737: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping xi-jinping-out-before-2027: no city info
+[2026-02-09T09:29:11.599Z] 
+⚠️  Skipping democratic-presidential-nominee-2028: no city info
+[2026-02-09T09:29:11.599Z] 
+📊 Stats: 2 scans | 1230 markets | 4 edges | 4 trades | $8.00 spent
+[2026-02-09T09:29:11.600Z] 📂 Open positions: 4
+[2026-02-09T09:29:11.600Z]    1. Will the highest temperature in New York City be b... @ $0.530
+[2026-02-09T09:29:11.600Z]    2. Will the highest temperature in Seattle be between... @ $0.410
+[2026-02-09T09:29:11.600Z]    3. Will the highest temperature in New York City be b... @ $0.530
+[2026-02-09T09:29:11.600Z]    4. Will the highest temperature in Seattle be between... @ $0.410
+[2026-02-09T09:29:11.600Z] 
+⏳ Waiting 120s until next scan...
