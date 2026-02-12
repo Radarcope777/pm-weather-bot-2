@@ -23,10 +23,10 @@ import { ethers } from 'ethers';
 
 const CONFIG = {
   pollIntervalMs: 120_000,        // 2 minutes between scans
-  maxPositionSize: 2,             // Max $2 per position
-  maxOpenPositions: 5,            // Max concurrent positions
+  maxPositionSize: 3,             // Default $3 per position (overridden by city posSize)
+  maxOpenPositions: 10,           // Max concurrent positions
   minEdgeThreshold: 0.15,         // 15% minimum edge
-  maxBudget: 20,                  // Total max spend in USDC
+  maxBudget: 50,                  // Total max spend in USDC
   edgePriceThreshold: 0.60,       // Only buy below this price
   forecastConfidence: 0.80,       // Assumed forecast accuracy
   logFile: 'weather-bot.log',
@@ -39,18 +39,12 @@ const CONFIG = {
 
 // Known city coordinates for weather API
 // Auto-discovery adds new cities dynamically (see discoverCities)
+// v3: Only profitable warm-climate cities (backtest: 85-90% projected WR)
 const CITY_COORDS = {
-  'nyc':        { lat: 40.7128, lon: -74.0060,  country: 'US', name: 'New York City', slug: 'nyc' },
-  'london':     { lat: 51.5074, lon: -0.1278,   country: 'UK', name: 'London',        slug: 'london' },
-  'seoul':      { lat: 37.5665, lon: 126.9780,  country: 'KR', name: 'Seoul',         slug: 'seoul' },
-  'dallas':     { lat: 32.7767, lon: -96.7970,  country: 'US', name: 'Dallas',        slug: 'dallas' },
-  'seattle':    { lat: 47.6062, lon: -122.3321, country: 'US', name: 'Seattle',       slug: 'seattle' },
-  'ankara':     { lat: 39.9334, lon: 32.8597,   country: 'TR', name: 'Ankara',        slug: 'ankara' },
-  'wellington': { lat: -41.2865, lon: 174.7762, country: 'NZ', name: 'Wellington',    slug: 'wellington' },
-  'miami':      { lat: 25.7617, lon: -80.1918,  country: 'US', name: 'Miami',         slug: 'miami' },
-  'chicago':    { lat: 41.8781, lon: -87.6298,  country: 'US', name: 'Chicago',       slug: 'chicago' },
-  'toronto':    { lat: 43.6532, lon: -79.3832,  country: 'CA', name: 'Toronto',       slug: 'toronto' },
-  'atlanta':    { lat: 33.7490, lon: -84.3880,  country: 'US', name: 'Atlanta',       slug: 'atlanta' },
+  'miami':      { lat: 25.7617, lon: -80.1918,  country: 'US', name: 'Miami',      slug: 'miami',      posSize: 4, tier: 'A' },
+  'atlanta':    { lat: 33.7490, lon: -84.3880,  country: 'US', name: 'Atlanta',    slug: 'atlanta',    posSize: 3, tier: 'A' },
+  'dallas':     { lat: 32.7767, lon: -96.7970,  country: 'US', name: 'Dallas',     slug: 'dallas',     posSize: 3, tier: 'B' },
+  'wellington': { lat: -41.2865, lon: 174.7762, country: 'NZ', name: 'Wellington', slug: 'wellington', posSize: 2, tier: 'B' },
 };
 
 // Candidate cities to probe during auto-discovery (checked once per day)
@@ -207,6 +201,101 @@ async function getUsdcEBalance() {
     log(`⚠️  Balance check failed: ${e.message}`);
     return null;
   }
+}
+
+// ═══════════════════════════════════════════════════
+// POSITION CLEANUP (remove resolved markets)
+// ═══════════════════════════════════════════════════
+
+async function cleanupResolvedPositions() {
+  if (state.openPositions.length === 0) return;
+  
+  log(`\n🧹 Checking ${state.openPositions.length} open position(s) for resolution...`);
+  
+  const toRemove = [];
+  
+  for (const pos of state.openPositions) {
+    // Check via Gamma API if event has resolved
+    const data = await fetchWithRetry(
+      `${CONFIG.gammaHost}/events?slug=${pos.eventSlug}`,
+      { headers: { 'Accept': 'application/json' } },
+      `cleanup:${pos.eventSlug}`
+    );
+    
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      // If event not found, check if date is >48h past — assume resolved
+      const eventDate = parseDateFromSlug(pos.eventSlug);
+      if (eventDate && Date.now() - eventDate.getTime() > 48 * 3600_000) {
+        log(`   🗑️  ${pos.eventSlug} — event not found & >48h old, removing`);
+        toRemove.push(pos);
+      }
+      await sleep(300);
+      continue;
+    }
+    
+    const event = data[0];
+    const closed = event.closed || event.resolved;
+    
+    if (closed) {
+      // Determine win/loss
+      let result = '❓';
+      if (event.markets) {
+        for (const m of event.markets) {
+          // Find the market matching our position
+          const tokens = safeJsonParse(m.clobTokenIds, []);
+          if (tokens.includes(pos.tokenId)) {
+            const outcomes = safeJsonParse(m.outcomes, []);
+            const outcomePrices = safeJsonParse(m.outcomePrices, []);
+            // If YES token resolved to $1, we won
+            const yesIdx = outcomes.indexOf('Yes');
+            if (yesIdx !== -1 && outcomePrices?.[yesIdx]) {
+              const resolvedPrice = parseFloat(outcomePrices[yesIdx]);
+              if (resolvedPrice >= 0.99) {
+                result = `✅ WIN +$${((1 - pos.entryPrice) * pos.shares).toFixed(2)}`;
+              } else if (resolvedPrice <= 0.01) {
+                result = `❌ LOSS -$${pos.cost.toFixed(2)}`;
+              }
+            }
+            break;
+          }
+        }
+      }
+      
+      log(`   ${result} ${pos.market?.substring(0, 60) || pos.eventSlug} (entry $${pos.entryPrice?.toFixed(3)})`);
+      toRemove.push(pos);
+    } else {
+      // Check if event date has passed by >24h — market likely will resolve soon
+      const eventDate = parseDateFromSlug(pos.eventSlug);
+      if (eventDate) {
+        const hoursAgo = (Date.now() - eventDate.getTime()) / 3600_000;
+        if (hoursAgo > 0) {
+          log(`   ⏳ ${pos.eventSlug} — ${hoursAgo.toFixed(0)}h past event date, awaiting resolution`);
+        }
+      }
+    }
+    
+    await sleep(300);
+  }
+  
+  if (toRemove.length > 0) {
+    const removeSlugs = new Set(toRemove.map(p => p.eventSlug));
+    state.openPositions = state.openPositions.filter(p => !removeSlugs.has(p.eventSlug));
+    saveState();
+    log(`   🧹 Removed ${toRemove.length} resolved position(s) — ${state.openPositions.length} remaining, ${CONFIG.maxOpenPositions - state.openPositions.length} slots free`);
+  } else {
+    log(`   ℹ️  No resolved positions found`);
+  }
+}
+
+function parseDateFromSlug(slug) {
+  // "highest-temperature-in-nyc-on-february-10-2026" → Date
+  const months = { january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
+    july: 6, august: 7, september: 8, october: 9, november: 10, december: 11 };
+  const m = slug.match(/on-(\w+)-(\d+)-(\d{4})$/);
+  if (!m) return null;
+  const month = months[m[1].toLowerCase()];
+  if (month === undefined) return null;
+  return new Date(parseInt(m[3]), month, parseInt(m[2]));
 }
 
 // ═══════════════════════════════════════════════════
@@ -567,6 +656,7 @@ async function analyzeEvent(eventSlug, markets, cityInfo, eventDate) {
     eventSlug,
     forecastDisplay,
     edgePercent,
+    cityInfo,
   };
 }
 
@@ -604,10 +694,11 @@ async function executeTrade(sdk, edge) {
     return false;
   }
   
-  // Calculate order parameters
+  // Calculate order parameters — use per-city position size if available
   const tokenId = edge.tokenId;
+  const posSize = edge.cityInfo?.posSize || CONFIG.maxPositionSize;
   const price = Math.min(edge.marketPrice + 0.01, 0.99); // Slightly above best ask to ensure fill
-  const size = Math.max(CONFIG.maxPositionSize / price, 5.1); // Min 5 shares per Polymarket rules
+  const size = Math.max(posSize / price, 5.1); // Min 5 shares per Polymarket rules
   const orderValue = price * size;
   
   if (orderValue < 1.0) {
@@ -778,6 +869,9 @@ async function main() {
       log(`\n${'═'.repeat(60)}`);
       log(`🔄 Scan #${scanNum} — ${ts()} — Budget: $${(CONFIG.maxBudget - state.totalSpent).toFixed(2)} left`);
       log(`${'═'.repeat(60)}`);
+      
+      // Clean up resolved positions (free slots for new trades)
+      await cleanupResolvedPositions();
       
       // Auto-discover new cities (once per day)
       await discoverCities();
