@@ -4,17 +4,14 @@ import { writeFileSync, readFileSync, appendFileSync, existsSync } from 'fs';
 import { ethers } from 'ethers';
 
 /**
- * Weather Trading Bot v2 for Polymarket
- * ======================================
- * Exploits informational edge between NOAA/Open-Meteo forecasts and market prices.
- * 
- * Key improvements over v1:
- * - Verifies every trade actually landed (order confirmation)
- * - Checks wallet balance before trading (USDC.e, not native USDC)
- * - Persists state to disk (survives restarts)
- * - Prevents duplicate trades on same market
- * - Robust error handling with exponential backoff
- * - Budget based on actual wallet balance, not hardcoded
+ * Weather Trading Bot v2.5 for Polymarket
+ * ========================================
+ * v2.5 improvements:
+ * 1. GFS timing optimization (trade 2-4h after GFS runs for fresh data)
+ * 2. Multi-source forecast consensus (NOAA + Open-Meteo for all cities)
+ * 3. Dynamic exit / sell positions when forecast shifts
+ * 4. Better bucket selection (prefer wider buckets)
+ * 5. Auto-reload budget from actual wallet balance
  */
 
 // ═══════════════════════════════════════════════════
@@ -25,12 +22,16 @@ const CONFIG = {
   pollIntervalMs: 120_000,        // 2 minutes between scans
   maxPositionSize: 3,             // Default $3 per position (overridden by city posSize)
   maxOpenPositions: 10,           // Max concurrent positions
-  minEdgeThreshold: 0.15,         // 15% minimum edge
-  maxBudget: 50,                  // Total max spend in USDC
+  minEdgeThreshold: 0.15,         // 15% minimum edge (normal)
+  minEdgeThresholdHigh: 0.25,     // 25% edge outside GFS window
+  minEdgeThresholdLow: 0.10,      // 10% edge for very high confidence consensus
+  maxBudget: 50,                  // Total max spend in USDC (legacy, now uses wallet balance)
   edgePriceThreshold: 0.60,       // Only buy below this price
   forecastConfidence: 0.80,       // Assumed forecast accuracy
+  walletReserve: 2.0,             // Keep $2 reserve for gas
   logFile: 'weather-bot.log',
   stateFile: 'weather-bot-state.json',
+  forecastLogFile: 'forecast-log.jsonl',
   rpcUrl: 'https://polygon.drpc.org',
   usdcE: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
   clobHost: 'https://clob.polymarket.com',
@@ -38,8 +39,6 @@ const CONFIG = {
 };
 
 // Known city coordinates for weather API
-// Auto-discovery adds new cities dynamically (see discoverCities)
-// v3: Only profitable warm-climate cities (backtest: 85-90% projected WR)
 const CITY_COORDS = {
   'miami':      { lat: 25.7617, lon: -80.1918,  country: 'US', name: 'Miami',      slug: 'miami',      posSize: 4, tier: 'A' },
   'atlanta':    { lat: 33.7490, lon: -84.3880,  country: 'US', name: 'Atlanta',    slug: 'atlanta',    posSize: 3, tier: 'A' },
@@ -47,7 +46,7 @@ const CITY_COORDS = {
   'wellington': { lat: -41.2865, lon: 174.7762, country: 'NZ', name: 'Wellington', slug: 'wellington', posSize: 2, tier: 'B' },
 };
 
-// Candidate cities to probe during auto-discovery (checked once per day)
+// Candidate cities to probe during auto-discovery
 const CANDIDATE_CITIES = [
   { slug: 'tokyo',          lat: 35.6762, lon: 139.6503, country: 'JP', name: 'Tokyo' },
   { slug: 'paris',          lat: 48.8566, lon: 2.3522,   country: 'FR', name: 'Paris' },
@@ -143,6 +142,12 @@ function ts() {
   return new Date().toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin' });
 }
 
+function logForecast(entry) {
+  try {
+    appendFileSync(CONFIG.forecastLogFile, JSON.stringify({ timestamp: new Date().toISOString(), ...entry }) + '\n');
+  } catch (_) { /* ignore */ }
+}
+
 // ═══════════════════════════════════════════════════
 // ROBUST HTTP
 // ═══════════════════════════════════════════════════
@@ -197,6 +202,40 @@ async function fetchWithRetry(url, options = {}, label = '', retries = 3) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ═══════════════════════════════════════════════════
+// FEATURE 1: GFS TIMING OPTIMIZATION
+// ═══════════════════════════════════════════════════
+
+/**
+ * GFS model runs at 00, 06, 12, 18 UTC.
+ * Data becomes available ~2h after run start.
+ * Optimal trading window: 2-4h after each run.
+ * Returns { inWindow, currentThreshold }
+ */
+function getGFSTimingInfo() {
+  const now = new Date();
+  const utcHour = now.getUTCHours();
+  const utcMinute = now.getUTCMinutes();
+  const hourFrac = utcHour + utcMinute / 60;
+  
+  // GFS runs: 00, 06, 12, 18 UTC
+  // Optimal windows: 02:00-04:00, 08:00-10:00, 14:00-16:00, 20:00-22:00 UTC
+  const gfsRuns = [0, 6, 12, 18];
+  let inWindow = false;
+  
+  for (const run of gfsRuns) {
+    const windowStart = run + 2;
+    const windowEnd = run + 4;
+    if (hourFrac >= windowStart && hourFrac < windowEnd) {
+      inWindow = true;
+      break;
+    }
+  }
+  
+  const threshold = inWindow ? CONFIG.minEdgeThreshold : CONFIG.minEdgeThresholdHigh;
+  return { inWindow, currentThreshold: threshold };
+}
+
+// ═══════════════════════════════════════════════════
 // WALLET & BALANCE
 // ═══════════════════════════════════════════════════
 
@@ -213,6 +252,17 @@ async function getUsdcEBalance() {
     log(`⚠️  Balance check failed: ${e.message}`);
     return null;
   }
+}
+
+/**
+ * FEATURE 5: Auto-reload budget from actual wallet balance.
+ * Available budget = wallet balance - reserve, not a cumulative counter.
+ */
+async function getAvailableBudget() {
+  const balance = await getUsdcEBalance();
+  if (balance === null) return null;
+  const available = Math.max(0, balance - CONFIG.walletReserve);
+  return { balance, available };
 }
 
 // ═══════════════════════════════════════════════════
@@ -250,7 +300,6 @@ async function cleanupResolvedPositions() {
   const toRemove = [];
   
   for (const pos of state.openPositions) {
-    // Check via Gamma API if event has resolved
     const data = await fetchWithRetry(
       `${CONFIG.gammaHost}/events?slug=${pos.eventSlug}`,
       { headers: { 'Accept': 'application/json' } },
@@ -258,11 +307,9 @@ async function cleanupResolvedPositions() {
     );
     
     if (!data || !Array.isArray(data) || data.length === 0) {
-      // If event not found, check if date is >48h past — assume resolved
       const eventDate = parseDateFromSlug(pos.eventSlug);
       if (eventDate && Date.now() - eventDate.getTime() > 48 * 3600_000) {
         log(`   🗑️  ${pos.eventSlug} — event not found & >48h old, removing`);
-        // Log as unknown result
         const cost = pos.cost || (pos.entryPrice * pos.shares) || 0;
         logTradeHistory({
           timestamp: new Date().toISOString(),
@@ -288,7 +335,6 @@ async function cleanupResolvedPositions() {
     const closed = event.closed || event.resolved;
     
     if (closed) {
-      // Determine win/loss
       let result = '❓';
       let tradeResult = 'unknown';
       let payout = 0;
@@ -296,17 +342,15 @@ async function cleanupResolvedPositions() {
       
       if (event.markets) {
         for (const m of event.markets) {
-          // Find the market matching our position
           const tokens = safeJsonParse(m.clobTokenIds, []);
           if (tokens.includes(pos.tokenId)) {
             const outcomes = safeJsonParse(m.outcomes, []);
             const outcomePrices = safeJsonParse(m.outcomePrices, []);
-            // If YES token resolved to $1, we won
             const yesIdx = outcomes.indexOf('Yes');
             if (yesIdx !== -1 && outcomePrices?.[yesIdx]) {
               const resolvedPrice = parseFloat(outcomePrices[yesIdx]);
               if (resolvedPrice >= 0.99) {
-                payout = pos.shares; // Each share pays $1 on win
+                payout = pos.shares;
                 result = `✅ WIN +$${(payout - cost).toFixed(2)}`;
                 tradeResult = 'win';
               } else if (resolvedPrice <= 0.01) {
@@ -321,11 +365,7 @@ async function cleanupResolvedPositions() {
       }
       
       log(`   ${result} ${pos.market?.substring(0, 60) || pos.eventSlug} (entry $${pos.entryPrice?.toFixed(3)})`);
-      
-      // Update P&L tracking
       updatePnL(tradeResult, payout, cost);
-      
-      // Log to trade history
       logTradeHistory({
         timestamp: new Date().toISOString(),
         city: pos.eventSlug.match(/in-(.+?)-on-/)?.[1] || 'unknown',
@@ -342,7 +382,6 @@ async function cleanupResolvedPositions() {
       
       toRemove.push(pos);
     } else {
-      // Check if event date has passed by >24h — market likely will resolve soon
       const eventDate = parseDateFromSlug(pos.eventSlug);
       if (eventDate) {
         const hoursAgo = (Date.now() - eventDate.getTime()) / 3600_000;
@@ -367,7 +406,6 @@ async function cleanupResolvedPositions() {
 }
 
 function parseDateFromSlug(slug) {
-  // "highest-temperature-in-nyc-on-february-10-2026" → Date
   const months = { january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
     july: 6, august: 7, september: 8, october: 9, november: 10, december: 11 };
   const m = slug.match(/on-(\w+)-(\d+)-(\d{4})$/);
@@ -378,17 +416,116 @@ function parseDateFromSlug(slug) {
 }
 
 // ═══════════════════════════════════════════════════
-// MARKET DISCOVERY
+// FEATURE 3: DYNAMIC EXIT / SELL POSITIONS
 // ═══════════════════════════════════════════════════
 
+/**
+ * Re-check open positions against current forecasts.
+ * If forecast no longer supports our bucket, attempt to sell.
+ */
+async function dynamicExitCheck(sdk) {
+  if (state.openPositions.length === 0) return;
+  
+  log(`\n🔄 Dynamic exit check on ${state.openPositions.length} position(s)...`);
+  
+  for (const pos of state.openPositions) {
+    // Only check positions for future events (not yet resolved)
+    const eventDate = parseDateFromSlug(pos.eventSlug);
+    if (!eventDate || Date.now() > eventDate.getTime()) continue;
+    
+    // Extract city from slug
+    const cityMatch = pos.eventSlug.match(/in-(.+?)-on-/);
+    if (!cityMatch) continue;
+    const citySlug = cityMatch[1];
+    const cityInfo = CITY_COORDS[citySlug];
+    if (!cityInfo) continue;
+    
+    // Get current consensus forecast
+    const consensus = await getConsensus(cityInfo, eventDate);
+    if (!consensus || !consensus.tempF) continue;
+    
+    // Parse the bucket we bet on from position market name
+    const range = parseTemperatureRange(pos.market);
+    if (!range) continue;
+    
+    const stillMatches = forecastMatchesRange(consensus.tempF, range);
+    
+    if (!stillMatches) {
+      log(`   ⚠️  FORECAST SHIFTED for ${pos.eventSlug}`);
+      log(`      Position: "${pos.market}" | New forecast: ${consensus.tempF.toFixed(1)}°F`);
+      log(`      Attempting to sell position...`);
+      
+      // Try to sell by placing an ASK order
+      try {
+        const price = await getMarketPrice(pos.tokenId);
+        if (price?.bestBid && price.bestBid > 0.02) {
+          // Sell at slightly below best bid for quick fill
+          const sellPrice = Math.max(price.bestBid - 0.01, 0.01);
+          const sellSize = pos.shares;
+          
+          log(`      💸 SELL ${sellSize.toFixed(2)} shares @ $${sellPrice.toFixed(3)} (best bid: $${price.bestBid.toFixed(3)})`);
+          
+          const result = await sdk.tradingService.createLimitOrder({
+            tokenId: pos.tokenId,
+            side: 'SELL',
+            price: sellPrice,
+            size: sellSize,
+            orderType: 'GTC',
+          });
+          
+          if (result && result.success !== false) {
+            const orderId = result.orderId || result.orderIds?.[0] || 'N/A';
+            log(`      ✅ Sell order placed! ID: ${orderId}`);
+            const estPayout = sellPrice * sellSize;
+            const cost = pos.cost || (pos.entryPrice * pos.shares) || 0;
+            log(`      📉 Est. recovery: $${estPayout.toFixed(2)} of $${cost.toFixed(2)} cost`);
+            
+            logTradeHistory({
+              timestamp: new Date().toISOString(),
+              city: citySlug,
+              market: pos.market,
+              type: 'dynamic_exit',
+              sellPrice,
+              shares: sellSize,
+              estRecovery: estPayout,
+              originalCost: cost,
+              reason: `forecast shifted to ${consensus.tempF.toFixed(1)}°F`,
+            });
+            
+            // Mark position for removal (sell order placed)
+            pos._exitPending = true;
+          } else {
+            log(`      ❌ Sell order failed: ${result?.errorMsg || JSON.stringify(result)}`);
+          }
+        } else {
+          log(`      ⚠️  No viable bid to sell into (best bid: $${price?.bestBid?.toFixed(3) || '0'})`);
+        }
+      } catch (e) {
+        log(`      ❌ Sell attempt error: ${e.message}`);
+      }
+    } else {
+      log(`   ✅ ${pos.market?.substring(0, 50)} — forecast still supports position`);
+    }
+    
+    await sleep(500);
+  }
+  
+  // Remove positions with pending exits
+  const exitCount = state.openPositions.filter(p => p._exitPending).length;
+  if (exitCount > 0) {
+    state.openPositions = state.openPositions.filter(p => !p._exitPending);
+    saveState();
+    log(`   🔄 Exited ${exitCount} position(s) via dynamic sell`);
+  }
+}
+
 // ═══════════════════════════════════════════════════
-// CITY AUTO-DISCOVERY
+// MARKET DISCOVERY
 // ═══════════════════════════════════════════════════
 
 let lastDiscovery = 0;
 
 async function discoverCities() {
-  // Run once per day max
   const now = Date.now();
   if (now - lastDiscovery < 86_400_000) return;
   lastDiscovery = now;
@@ -398,7 +535,6 @@ async function discoverCities() {
   let newCount = 0;
   
   for (const candidate of CANDIDATE_CITIES) {
-    // Skip if already known
     if (CITY_COORDS[candidate.slug]) continue;
     
     const slug = generateSlug(candidate.slug, today);
@@ -478,7 +614,6 @@ function safeJsonParse(val, fallback) {
 async function findWeatherMarkets() {
   const allMarkets = [];
   
-  // Dates: today + tomorrow + day after
   const dates = [0, 1, 2].map(d => {
     const dt = new Date();
     dt.setDate(dt.getDate() + d);
@@ -505,7 +640,7 @@ async function findWeatherMarkets() {
         }
       }
       
-      await sleep(400); // Rate limit Gamma API
+      await sleep(400);
     }
   }
   
@@ -516,17 +651,10 @@ async function findWeatherMarkets() {
 // WEATHER FORECASTS
 // ═══════════════════════════════════════════════════
 
-async function fetchForecast(cityInfo) {
-  if (cityInfo.country === 'US') {
-    return fetchNOAAForecast(cityInfo.lat, cityInfo.lon);
-  }
-  return fetchOpenMeteoForecast(cityInfo.lat, cityInfo.lon);
-}
-
 async function fetchNOAAForecast(lat, lon) {
   const pointsUrl = `https://api.weather.gov/points/${lat.toFixed(4)},${lon.toFixed(4)}`;
   const pointsData = await fetchWithRetry(pointsUrl, {
-    headers: { 'User-Agent': 'WeatherTradingBot/2.0 (contact@example.com)' }
+    headers: { 'User-Agent': 'WeatherTradingBot/2.5 (contact@example.com)' }
   }, 'NOAA points');
   
   if (!pointsData) return null;
@@ -535,7 +663,7 @@ async function fetchNOAAForecast(lat, lon) {
   if (!forecastUrl) { log('  ⚠️  No forecast URL from NOAA'); return null; }
   
   const forecastData = await fetchWithRetry(forecastUrl, {
-    headers: { 'User-Agent': 'WeatherTradingBot/2.0 (contact@example.com)' }
+    headers: { 'User-Agent': 'WeatherTradingBot/2.5 (contact@example.com)' }
   }, 'NOAA forecast');
   
   if (!forecastData) return null;
@@ -543,10 +671,11 @@ async function fetchNOAAForecast(lat, lon) {
   return (forecastData.properties?.periods || []).map(p => ({
     name: p.name,
     startTime: new Date(p.startTime),
-    temperature: p.temperature,      // Already in °F
+    temperature: p.temperature,
     temperatureUnit: p.temperatureUnit,
     shortForecast: p.shortForecast,
     isDaytime: p.isDaytime,
+    source: 'NOAA',
   }));
 }
 
@@ -559,25 +688,108 @@ async function fetchOpenMeteoForecast(lat, lon) {
   
   return data.daily.time.map((date, i) => ({
     date: new Date(date),
-    tempMax: data.daily.temperature_2m_max[i],  // Already in °F
+    tempMax: data.daily.temperature_2m_max[i],
     tempMin: data.daily.temperature_2m_min[i],
+    source: 'Open-Meteo',
   }));
 }
 
-function getForecastHigh(forecast, cityInfo, eventDate) {
-  if (!forecast || !eventDate) return null;
+function getNOAAHigh(noaaForecast, eventDate) {
+  if (!noaaForecast || !eventDate) return null;
+  const period = noaaForecast.find(f =>
+    f.isDaytime && f.startTime.toDateString() === eventDate.toDateString()
+  );
+  return period ? period.temperature : null;
+}
+
+function getOpenMeteoHigh(omForecast, eventDate) {
+  if (!omForecast || !eventDate) return null;
+  const day = omForecast.find(f => f.date.toDateString() === eventDate.toDateString());
+  return day ? day.tempMax : null;
+}
+
+// ═══════════════════════════════════════════════════
+// FEATURE 2: MULTI-SOURCE FORECAST CONSENSUS
+// ═══════════════════════════════════════════════════
+
+/**
+ * Fetch BOTH NOAA and Open-Meteo for every city.
+ * Returns { tempF, confidence, noaaTemp, omTemp, source }
+ * confidence: 'very_high' (<= 1°F diff), 'high' (<= 2°F), 'moderate' (<= 3°F), 'skip' (> 3°F)
+ */
+async function getConsensus(cityInfo, eventDate) {
+  const [noaaForecast, omForecast] = await Promise.all([
+    fetchNOAAForecast(cityInfo.lat, cityInfo.lon).catch(() => null),
+    fetchOpenMeteoForecast(cityInfo.lat, cityInfo.lon).catch(() => null),
+  ]);
   
-  if (cityInfo.country === 'US') {
-    // NOAA: find daytime period for event date
-    const period = forecast.find(f =>
-      f.isDaytime && f.startTime.toDateString() === eventDate.toDateString()
-    );
-    return period ? { tempF: period.temperature, source: 'NOAA', detail: `${period.name}: ${period.temperature}°F - ${period.shortForecast}` } : null;
-  } else {
-    // Open-Meteo
-    const day = forecast.find(f => f.date.toDateString() === eventDate.toDateString());
-    return day ? { tempF: day.tempMax, source: 'Open-Meteo', detail: `${day.date.toLocaleDateString()}: High ${day.tempMax}°F` } : null;
+  const noaaTemp = getNOAAHigh(noaaForecast, eventDate);
+  const omTemp = getOpenMeteoHigh(omForecast, eventDate);
+  
+  // Log both forecasts
+  logForecast({
+    city: cityInfo.name,
+    eventDate: eventDate.toISOString().slice(0, 10),
+    noaaTemp,
+    omTemp,
+    diff: (noaaTemp != null && omTemp != null) ? Math.abs(noaaTemp - omTemp) : null,
+  });
+  
+  // If both available, compute consensus
+  if (noaaTemp != null && omTemp != null) {
+    const diff = Math.abs(noaaTemp - omTemp);
+    const avgTemp = (noaaTemp + omTemp) / 2;
+    
+    if (diff > 3) {
+      log(`   ⚠️  Forecasts disagree by ${diff.toFixed(1)}°F (NOAA: ${noaaTemp}°F, OM: ${omTemp}°F) — SKIP`);
+      return { tempF: avgTemp, confidence: 'skip', noaaTemp, omTemp, source: 'consensus', diff };
+    }
+    
+    let confidence;
+    if (diff <= 1) {
+      confidence = 'very_high';
+    } else if (diff <= 2) {
+      confidence = 'high';
+    } else {
+      confidence = 'moderate';
+    }
+    
+    log(`   🌡️  Consensus: ${avgTemp.toFixed(1)}°F (NOAA: ${noaaTemp}°F, OM: ${omTemp}°F, diff: ${diff.toFixed(1)}°F, confidence: ${confidence})`);
+    return { tempF: avgTemp, confidence, noaaTemp, omTemp, source: 'consensus', diff };
   }
+  
+  // Fallback to whichever is available
+  if (noaaTemp != null) {
+    log(`   🌡️  NOAA only: ${noaaTemp}°F (Open-Meteo unavailable)`);
+    return { tempF: noaaTemp, confidence: 'single_source', noaaTemp, omTemp: null, source: 'NOAA' };
+  }
+  if (omTemp != null) {
+    log(`   🌡️  Open-Meteo only: ${omTemp}°F (NOAA unavailable)`);
+    return { tempF: omTemp, confidence: 'single_source', noaaTemp: null, omTemp, source: 'Open-Meteo' };
+  }
+  
+  return null;
+}
+
+/**
+ * Get effective edge threshold based on consensus confidence and GFS timing.
+ */
+function getEffectiveEdgeThreshold(confidence, gfsTiming) {
+  // Base threshold from GFS timing
+  let threshold = gfsTiming.currentThreshold;
+  
+  // Adjust based on consensus confidence
+  if (confidence === 'very_high') {
+    threshold = Math.min(threshold, CONFIG.minEdgeThresholdLow); // 10%
+  } else if (confidence === 'high') {
+    // Use normal GFS-based threshold
+  } else if (confidence === 'moderate') {
+    threshold = Math.max(threshold, CONFIG.minEdgeThreshold); // At least 15%
+  } else if (confidence === 'single_source') {
+    threshold = Math.max(threshold, CONFIG.minEdgeThreshold); // At least 15%
+  }
+  
+  return threshold;
 }
 
 // ═══════════════════════════════════════════════════
@@ -622,6 +834,44 @@ function forecastMatchesRange(forecastF, range) {
 }
 
 // ═══════════════════════════════════════════════════
+// FEATURE 4: BETTER BUCKET SELECTION
+// ═══════════════════════════════════════════════════
+
+/**
+ * Score a bucket by width. Wider buckets (above/below) are preferred.
+ * Returns a width score: higher = wider = preferred.
+ */
+function bucketWidthScore(range) {
+  if (!range) return 0;
+  switch (range.type) {
+    case 'above': return 100; // "≥X°F" — very wide
+    case 'below': return 100; // "≤X°F" — very wide
+    case 'range': return range.max - range.min + 1; // e.g., "70-75" = 6
+    case 'exact': return 1;   // single degree — narrowest
+    default: return 0;
+  }
+}
+
+/**
+ * Given multiple matching markets, prefer wider buckets when edges are similar (within 5%).
+ */
+function selectBestBucket(candidates) {
+  if (candidates.length === 0) return null;
+  if (candidates.length === 1) return candidates[0];
+  
+  // Sort by edge descending
+  candidates.sort((a, b) => b.edgePercent - a.edgePercent);
+  
+  const bestEdge = candidates[0].edgePercent;
+  
+  // Among candidates within 5% of best edge, prefer wider bucket
+  const competitive = candidates.filter(c => bestEdge - c.edgePercent <= 0.05);
+  competitive.sort((a, b) => b.widthScore - a.widthScore);
+  
+  return competitive[0];
+}
+
+// ═══════════════════════════════════════════════════
 // MARKET PRICES
 // ═══════════════════════════════════════════════════
 
@@ -645,97 +895,98 @@ async function getMarketPrice(tokenId) {
 }
 
 // ═══════════════════════════════════════════════════
-// EDGE ANALYSIS
+// EDGE ANALYSIS (with consensus + timing + bucket preference)
 // ═══════════════════════════════════════════════════
 
-async function analyzeEvent(eventSlug, markets, cityInfo, eventDate) {
+async function analyzeEvent(eventSlug, markets, cityInfo, eventDate, gfsTiming) {
   if (!markets?.length || !cityInfo) return null;
   
   log(`\n🔍 ${eventSlug}`);
   log(`   ${cityInfo.name} — ${eventDate?.toLocaleDateString() || '?'} — ${markets.length} buckets`);
   
-  // Already traded this event?
   if (state.tradedMarkets.includes(eventSlug)) {
     log('   ⏭️  Already traded this event, skipping');
     return null;
   }
   
-  // Fetch forecast
-  const forecast = await fetchForecast(cityInfo);
-  if (!forecast) { log('   ❌ No forecast data'); return null; }
+  // FEATURE 2: Get consensus forecast from both sources
+  const consensus = await getConsensus(cityInfo, eventDate);
+  if (!consensus) { log('   ❌ No forecast data from any source'); return null; }
   
-  const fcst = getForecastHigh(forecast, cityInfo, eventDate);
-  if (!fcst) { log('   ❌ No forecast for event date'); return null; }
+  // Skip if sources disagree too much
+  if (consensus.confidence === 'skip') {
+    return null;
+  }
   
-  log(`   🌡️  ${fcst.source}: ${fcst.detail}`);
+  const forecastF = consensus.tempF;
   
-  // Parse all buckets and find matching one
-  let matchingMarket = null;
-  let matchingRange = null;
+  // Get effective threshold based on consensus + GFS timing
+  const effectiveThreshold = getEffectiveEdgeThreshold(consensus.confidence, gfsTiming);
+  log(`   📊 Edge threshold: ${(effectiveThreshold * 100).toFixed(0)}% (confidence: ${consensus.confidence}, GFS window: ${gfsTiming.inWindow ? 'YES' : 'no'})`);
+  
+  // Parse all buckets and find ALL matching ones (for bucket selection)
   let marketUnit = null;
+  const matchingCandidates = [];
   
   for (const market of markets) {
     const range = parseTemperatureRange(market.temperatureRange || market.question);
     if (!range) continue;
     if (!marketUnit) marketUnit = range.unit;
     
-    if (forecastMatchesRange(fcst.tempF, range)) {
-      matchingMarket = market;
-      matchingRange = range;
-      break;
+    if (forecastMatchesRange(forecastF, range)) {
+      // Fetch price
+      if (!market.tokens?.[0]) continue;
+      const price = await getMarketPrice(market.tokens[0]);
+      if (!price?.bestAsk) continue;
+      
+      const askPrice = price.bestAsk;
+      if (askPrice >= CONFIG.edgePriceThreshold) continue;
+      
+      const edgePercent = (CONFIG.forecastConfidence - askPrice) / askPrice;
+      const widthScore = bucketWidthScore(range);
+      
+      matchingCandidates.push({
+        market,
+        tokenId: market.tokens[0],
+        marketPrice: askPrice,
+        eventSlug,
+        edgePercent,
+        widthScore,
+        range,
+        cityInfo,
+      });
     }
   }
   
-  if (!matchingMarket) {
+  if (matchingCandidates.length === 0) {
     const forecastDisplay = marketUnit === 'C'
-      ? `${fcst.tempF}°F (${fahrenheitToCelsius(fcst.tempF).toFixed(1)}°C)`
-      : `${fcst.tempF}°F`;
-    log(`   ⚠️  Forecast ${forecastDisplay} doesn't match any bucket`);
-    log(`   📋 Buckets: ${markets.map(m => m.temperatureRange).filter(Boolean).join(', ')}`);
+      ? `${forecastF.toFixed(1)}°F (${fahrenheitToCelsius(forecastF).toFixed(1)}°C)`
+      : `${forecastF.toFixed(1)}°F`;
+    log(`   ⚠️  Forecast ${forecastDisplay} — no matching bucket with viable price`);
     return null;
   }
   
-  // Fetch price for matching bucket
-  if (!matchingMarket.tokens?.[0]) {
-    log(`   ⚠️  No token ID for ${matchingMarket.temperatureRange}`);
-    return null;
-  }
+  // FEATURE 4: Select best bucket (prefer wider when edges are similar)
+  const best = selectBestBucket(matchingCandidates);
   
-  const price = await getMarketPrice(matchingMarket.tokens[0]);
-  if (!price?.bestAsk) {
-    log(`   ⚠️  No ask price for ${matchingMarket.temperatureRange}`);
-    return null;
-  }
-  
-  const askPrice = price.bestAsk;
   const forecastDisplay = marketUnit === 'C'
-    ? `${fcst.tempF}°F (${fahrenheitToCelsius(fcst.tempF).toFixed(1)}°C)`
-    : `${fcst.tempF}°F`;
+    ? `${forecastF.toFixed(1)}°F (${fahrenheitToCelsius(forecastF).toFixed(1)}°C)`
+    : `${forecastF.toFixed(1)}°F`;
   
-  log(`   ✅ Forecast → ${matchingMarket.temperatureRange} @ ${(askPrice * 100).toFixed(1)}%`);
+  log(`   ✅ Forecast → ${best.market.temperatureRange} @ ${(best.marketPrice * 100).toFixed(1)}% (width: ${best.widthScore})`);
   
-  if (askPrice >= CONFIG.edgePriceThreshold) {
-    log(`   ℹ️  Fairly priced (≥${CONFIG.edgePriceThreshold * 100}%), no edge`);
-    return null;
-  }
-  
-  const edgePercent = (CONFIG.forecastConfidence - askPrice) / askPrice;
-  if (edgePercent < CONFIG.minEdgeThreshold) {
-    log(`   ℹ️  Edge ${(edgePercent * 100).toFixed(1)}% below threshold ${CONFIG.minEdgeThreshold * 100}%`);
+  if (best.edgePercent < effectiveThreshold) {
+    log(`   ℹ️  Edge ${(best.edgePercent * 100).toFixed(1)}% below threshold ${(effectiveThreshold * 100).toFixed(0)}%`);
     return null;
   }
   
   state.stats.edgesIdentified++;
-  log(`   🎯 EDGE: ${(edgePercent * 100).toFixed(1)}% — ${forecastDisplay} → "${matchingMarket.temperatureRange}" @ ${(askPrice * 100).toFixed(1)}%`);
+  log(`   🎯 EDGE: ${(best.edgePercent * 100).toFixed(1)}% — ${forecastDisplay} → "${best.market.temperatureRange}" @ ${(best.marketPrice * 100).toFixed(1)}%`);
   
   return {
-    market: matchingMarket,
-    tokenId: matchingMarket.tokens[0],
-    marketPrice: askPrice,
-    eventSlug,
+    ...best,
     forecastDisplay,
-    edgePercent,
-    cityInfo,
+    consensus,
   };
 }
 
@@ -744,40 +995,33 @@ async function analyzeEvent(eventSlug, markets, cityInfo, eventDate) {
 // ═══════════════════════════════════════════════════
 
 async function executeTrade(sdk, edge) {
-  // Pre-checks
   if (state.openPositions.length >= CONFIG.maxOpenPositions) {
     log('   ⚠️  Max positions reached');
     return false;
   }
   
-  if (state.totalSpent + CONFIG.maxPositionSize > CONFIG.maxBudget) {
-    log(`   ⚠️  Budget limit ($${CONFIG.maxBudget}) would be exceeded`);
-    return false;
-  }
-  
-  // Check actual wallet balance
-  const balance = await getUsdcEBalance();
-  if (balance === null) {
+  // FEATURE 5: Check actual wallet balance instead of cumulative budget
+  const budgetInfo = await getAvailableBudget();
+  if (budgetInfo === null) {
     log('   ❌ Cannot verify wallet balance — skipping trade for safety');
     return false;
   }
-  if (balance < CONFIG.maxPositionSize + 0.5) {
-    log(`   ❌ Insufficient USDC.e balance: $${balance.toFixed(2)} (need $${CONFIG.maxPositionSize + 0.5})`);
+  
+  const posSize = edge.cityInfo?.posSize || CONFIG.maxPositionSize;
+  if (budgetInfo.available < posSize) {
+    log(`   ❌ Insufficient available budget: $${budgetInfo.available.toFixed(2)} (need $${posSize}, wallet: $${budgetInfo.balance.toFixed(2)}, reserve: $${CONFIG.walletReserve})`);
     return false;
   }
-  log(`   💰 Wallet: $${balance.toFixed(2)} USDC.e`);
+  log(`   💰 Wallet: $${budgetInfo.balance.toFixed(2)} USDC.e (available: $${budgetInfo.available.toFixed(2)})`);
   
-  // Already traded this event?
   if (state.tradedMarkets.includes(edge.eventSlug)) {
     log('   ⚠️  Already traded this event (race condition guard)');
     return false;
   }
   
-  // Calculate order parameters — use per-city position size if available
   const tokenId = edge.tokenId;
-  const posSize = edge.cityInfo?.posSize || CONFIG.maxPositionSize;
-  const price = Math.min(edge.marketPrice + 0.01, 0.99); // Slightly above best ask to ensure fill
-  const size = Math.max(posSize / price, 5.1); // Min 5 shares per Polymarket rules
+  const price = Math.min(edge.marketPrice + 0.01, 0.99);
+  const size = Math.max(posSize / price, 5.1);
   const orderValue = price * size;
   
   if (orderValue < 1.0) {
@@ -787,7 +1031,6 @@ async function executeTrade(sdk, edge) {
   
   log(`   💸 PLACING ORDER: BUY ${size.toFixed(2)} shares @ $${price.toFixed(3)} = $${orderValue.toFixed(2)}`);
   
-  // Execute trade
   let result;
   try {
     result = await sdk.tradingService.createLimitOrder({
@@ -803,7 +1046,6 @@ async function executeTrade(sdk, edge) {
     return false;
   }
   
-  // Verify result
   if (!result) {
     log('   ❌ Order returned null/undefined');
     state.stats.errors++;
@@ -819,7 +1061,6 @@ async function executeTrade(sdk, edge) {
   const orderId = result.orderId || result.orderIds?.[0];
   if (!orderId) {
     log(`   ⚠️  Order response has no orderId — response: ${JSON.stringify(result)}`);
-    // Don't treat as failure — some responses don't include orderId but the order landed
   }
   
   log(`   ✅ Order placed! ID: ${orderId || 'N/A'}`);
@@ -827,7 +1068,6 @@ async function executeTrade(sdk, edge) {
     log(`   📋 TX: ${result.transactionHashes.join(', ')}`);
   }
   
-  // Verify order is in the book (wait a moment for propagation)
   if (orderId) {
     await sleep(3000);
     try {
@@ -846,11 +1086,10 @@ async function executeTrade(sdk, edge) {
     }
   }
   
-  // Post-trade balance check
   await sleep(2000);
   const newBalance = await getUsdcEBalance();
   if (newBalance !== null) {
-    const diff = balance - newBalance;
+    const diff = budgetInfo.balance - newBalance;
     log(`   💰 Balance after: $${newBalance.toFixed(2)} (Δ $${diff.toFixed(2)})`);
   }
   
@@ -865,6 +1104,7 @@ async function executeTrade(sdk, edge) {
     eventSlug: edge.eventSlug,
     timestamp: new Date().toISOString(),
     forecastDisplay: edge.forecastDisplay,
+    consensus: edge.consensus ? { confidence: edge.consensus.confidence, noaa: edge.consensus.noaaTemp, om: edge.consensus.omTemp } : null,
   });
   
   state.tradedMarkets.push(edge.eventSlug);
@@ -882,37 +1122,33 @@ async function executeTrade(sdk, edge) {
 async function main() {
   log('');
   log('═══════════════════════════════════════════════════');
-  log('  🌤️  Weather Trading Bot v2');
+  log('  🌤️  Weather Trading Bot v2.5');
+  log('  ✨ GFS timing | Consensus | Dynamic exit | Smart buckets | Auto-budget');
   log('═══════════════════════════════════════════════════');
   log(`📍 Cities: ${Object.keys(CITY_COORDS).join(', ')}`);
-  log(`💰 Position size: $${CONFIG.maxPositionSize} | Budget: $${CONFIG.maxBudget}`);
-  log(`📊 Max positions: ${CONFIG.maxOpenPositions} | Min edge: ${CONFIG.minEdgeThreshold * 100}%`);
+  log(`💰 Position size: $${CONFIG.maxPositionSize} | Reserve: $${CONFIG.walletReserve}`);
+  log(`📊 Max positions: ${CONFIG.maxOpenPositions} | Edge: ${CONFIG.minEdgeThresholdLow * 100}%-${CONFIG.minEdgeThresholdHigh * 100}% (dynamic)`);
   log('');
   
-  // Load persisted state
   loadState();
   
-  // Validate private key
   if (!process.env.POLYMARKET_PRIVATE_KEY) {
     log('❌ POLYMARKET_PRIVATE_KEY not set in .env');
     process.exit(1);
   }
   
-  // Check wallet balance before starting
   log('🔍 Pre-flight checks...');
-  const startBalance = await getUsdcEBalance();
-  if (startBalance === null) {
+  const budgetInfo = await getAvailableBudget();
+  if (budgetInfo === null) {
     log('❌ Cannot read wallet balance — check RPC connection');
     process.exit(1);
   }
-  if (startBalance < 1) {
-    log(`❌ Insufficient USDC.e: $${startBalance.toFixed(2)} (need at least $1)`);
-    log('   Run setup.mjs first to swap native USDC to USDC.e');
+  if (budgetInfo.balance < 1) {
+    log(`❌ Insufficient USDC.e: $${budgetInfo.balance.toFixed(2)} (need at least $1)`);
     process.exit(1);
   }
-  log(`✅ Wallet: $${startBalance.toFixed(2)} USDC.e`);
+  log(`✅ Wallet: $${budgetInfo.balance.toFixed(2)} USDC.e | Available: $${budgetInfo.available.toFixed(2)}`);
   
-  // Initialize SDK
   log('🔑 Initializing Polymarket SDK...');
   let sdk;
   try {
@@ -923,20 +1159,11 @@ async function main() {
     log('✅ SDK initialized, CLOB API ready');
   } catch (e) {
     log(`❌ SDK initialization failed: ${e.message}`);
-    log('   Check your private key and network connection');
     process.exit(1);
   }
   
-  // Check remaining budget
-  const remainingBudget = CONFIG.maxBudget - state.totalSpent;
-  if (remainingBudget < CONFIG.maxPositionSize) {
-    log(`⚠️  Budget exhausted: $${state.totalSpent.toFixed(2)} / $${CONFIG.maxBudget} spent`);
-    log('   Bot will continue monitoring positions but won\'t place new trades');
-  }
-  log(`💰 Budget remaining: $${remainingBudget.toFixed(2)} / $${CONFIG.maxBudget}`);
   log('');
   
-  // Main loop
   let consecutiveErrors = 0;
   
   while (true) {
@@ -944,14 +1171,24 @@ async function main() {
       state.stats.scans++;
       const scanNum = state.stats.scans;
       
+      // FEATURE 1: GFS timing
+      const gfsTiming = getGFSTimingInfo();
+      
+      // FEATURE 5: Auto-reload budget from wallet
+      const currentBudget = await getAvailableBudget();
+      const availableStr = currentBudget ? `$${currentBudget.available.toFixed(2)} avail` : '$? avail';
+      
       log(`\n${'═'.repeat(60)}`);
-      log(`🔄 Scan #${scanNum} — ${ts()} — Budget: $${(CONFIG.maxBudget - state.totalSpent).toFixed(2)} left`);
+      log(`🔄 Scan #${scanNum} — ${ts()} — ${availableStr} — GFS window: ${gfsTiming.inWindow ? '✅ OPTIMAL' : '⏳ off-peak (${(gfsTiming.currentThreshold * 100).toFixed(0)}% threshold)'}`);
       log(`${'═'.repeat(60)}`);
       
-      // Clean up resolved positions (free slots for new trades)
+      // Clean up resolved positions
       await cleanupResolvedPositions();
       
-      // Auto-discover new cities (once per day)
+      // FEATURE 3: Dynamic exit check
+      await dynamicExitCheck(sdk);
+      
+      // Auto-discover new cities
       await discoverCities();
       
       // Find markets
@@ -963,7 +1200,6 @@ async function main() {
       } else {
         log(`📬 Found ${markets.length} market(s)`);
         
-        // Group by event
         const events = {};
         for (const m of markets) {
           if (!m.eventSlug) continue;
@@ -975,13 +1211,12 @@ async function main() {
         
         log(`📊 ${Object.keys(events).length} event(s)`);
         
-        // Analyze each event
         for (const [slug, group] of Object.entries(events)) {
           if (!group.cityInfo) continue;
           
-          const edge = await analyzeEvent(slug, group.markets, group.cityInfo, group.eventDate);
+          const edge = await analyzeEvent(slug, group.markets, group.cityInfo, group.eventDate, gfsTiming);
           
-          if (edge && edge.edgePercent >= CONFIG.minEdgeThreshold) {
+          if (edge) {
             const success = await executeTrade(sdk, edge);
             if (success) {
               log(`   🎉 Trade #${state.tradesExecuted} placed!`);
@@ -992,7 +1227,7 @@ async function main() {
         }
       }
       
-      // Wallet balance tracking (every scan)
+      // Wallet balance tracking
       const scanBalance = await getUsdcEBalance();
       if (scanBalance !== null) {
         if (!state.pnl) state.pnl = { totalWins: 0, totalLosses: 0, winCount: 0, lossCount: 0, totalPayout: 0, totalCost: 0, netPnL: 0, walletBalance: null, lastUpdated: null, lastDailySummary: null };
@@ -1001,7 +1236,7 @@ async function main() {
         log(`💰 Wallet: $${scanBalance.toFixed(2)} USDC.e`);
       }
       
-      // Daily P&L summary (first scan after midnight UTC)
+      // Daily P&L summary
       const todayUTC = new Date().toISOString().slice(0, 10);
       if (state.pnl && state.pnl.lastDailySummary !== todayUTC) {
         state.pnl.lastDailySummary = todayUTC;
@@ -1023,11 +1258,6 @@ async function main() {
         }
       }
       
-      // Budget check
-      if (CONFIG.maxBudget - state.totalSpent < CONFIG.maxPositionSize) {
-        log('\n💰 Budget exhausted — bot will continue monitoring but won\'t trade');
-      }
-      
       saveState();
       consecutiveErrors = 0;
       
@@ -1039,8 +1269,7 @@ async function main() {
       state.stats.errors++;
       log(`\n❌ Scan error: ${e.message}`);
       
-      // Exponential backoff on consecutive errors
-      const backoff = Math.min(consecutiveErrors * 30_000, 300_000); // Max 5 min
+      const backoff = Math.min(consecutiveErrors * 30_000, 300_000);
       log(`⏳ Backoff: ${backoff / 1000}s (${consecutiveErrors} consecutive errors)`);
       
       if (consecutiveErrors >= 10) {
@@ -1070,7 +1299,6 @@ function shutdown(signal) {
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-// Catch unhandled errors
 process.on('uncaughtException', (e) => {
   log(`💀 Uncaught exception: ${e.message}`);
   log(e.stack);
@@ -1081,10 +1309,8 @@ process.on('uncaughtException', (e) => {
 process.on('unhandledRejection', (e) => {
   log(`💀 Unhandled rejection: ${e?.message || e}`);
   saveState();
-  // Don't exit — let the main loop handle it
 });
 
-// Start
 main().catch(e => {
   log(`💥 Fatal: ${e.message}`);
   log(e.stack);
