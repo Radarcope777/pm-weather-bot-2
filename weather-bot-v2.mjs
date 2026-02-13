@@ -92,6 +92,18 @@ let state = {
   tradesExecuted: 0,
   stats: { scans: 0, marketsFound: 0, edgesIdentified: 0, errors: 0 },
   lastScan: null,
+  pnl: {
+    totalWins: 0,
+    totalLosses: 0,
+    winCount: 0,
+    lossCount: 0,
+    totalPayout: 0,
+    totalCost: 0,
+    netPnL: 0,
+    walletBalance: null,
+    lastUpdated: null,
+    lastDailySummary: null,
+  },
 };
 
 function loadState() {
@@ -207,6 +219,29 @@ async function getUsdcEBalance() {
 // POSITION CLEANUP (remove resolved markets)
 // ═══════════════════════════════════════════════════
 
+function logTradeHistory(entry) {
+  try {
+    appendFileSync('trade-history.jsonl', JSON.stringify(entry) + '\n');
+  } catch (e) {
+    log(`⚠️  Could not write trade history: ${e.message}`);
+  }
+}
+
+function updatePnL(result, payout, cost) {
+  if (!state.pnl) state.pnl = { totalWins: 0, totalLosses: 0, winCount: 0, lossCount: 0, totalPayout: 0, totalCost: 0, netPnL: 0, walletBalance: null, lastUpdated: null, lastDailySummary: null };
+  if (result === 'win') {
+    state.pnl.winCount++;
+    state.pnl.totalWins += payout - cost;
+    state.pnl.totalPayout += payout;
+  } else if (result === 'loss') {
+    state.pnl.lossCount++;
+    state.pnl.totalLosses += cost;
+  }
+  state.pnl.totalCost += cost;
+  state.pnl.netPnL = state.pnl.totalPayout - state.pnl.totalCost;
+  state.pnl.lastUpdated = new Date().toISOString();
+}
+
 async function cleanupResolvedPositions() {
   if (state.openPositions.length === 0) return;
   
@@ -227,6 +262,22 @@ async function cleanupResolvedPositions() {
       const eventDate = parseDateFromSlug(pos.eventSlug);
       if (eventDate && Date.now() - eventDate.getTime() > 48 * 3600_000) {
         log(`   🗑️  ${pos.eventSlug} — event not found & >48h old, removing`);
+        // Log as unknown result
+        const cost = pos.cost || (pos.entryPrice * pos.shares) || 0;
+        logTradeHistory({
+          timestamp: new Date().toISOString(),
+          city: pos.eventSlug.match(/in-(.+?)-on-/)?.[1] || 'unknown',
+          date: pos.eventSlug.match(/on-(.+)$/)?.[1] || 'unknown',
+          market: pos.market || pos.eventSlug,
+          entryPrice: pos.entryPrice,
+          cost,
+          shares: pos.shares,
+          result: 'unknown',
+          payout: 0,
+          pnl: -cost,
+          walletBalance: state.pnl?.walletBalance,
+        });
+        updatePnL('loss', 0, cost);
         toRemove.push(pos);
       }
       await sleep(300);
@@ -239,6 +290,10 @@ async function cleanupResolvedPositions() {
     if (closed) {
       // Determine win/loss
       let result = '❓';
+      let tradeResult = 'unknown';
+      let payout = 0;
+      const cost = pos.cost || (pos.entryPrice * pos.shares) || 0;
+      
       if (event.markets) {
         for (const m of event.markets) {
           // Find the market matching our position
@@ -251,9 +306,13 @@ async function cleanupResolvedPositions() {
             if (yesIdx !== -1 && outcomePrices?.[yesIdx]) {
               const resolvedPrice = parseFloat(outcomePrices[yesIdx]);
               if (resolvedPrice >= 0.99) {
-                result = `✅ WIN +$${((1 - pos.entryPrice) * pos.shares).toFixed(2)}`;
+                payout = pos.shares; // Each share pays $1 on win
+                result = `✅ WIN +$${(payout - cost).toFixed(2)}`;
+                tradeResult = 'win';
               } else if (resolvedPrice <= 0.01) {
-                result = `❌ LOSS -$${pos.cost.toFixed(2)}`;
+                payout = 0;
+                result = `❌ LOSS -$${cost.toFixed(2)}`;
+                tradeResult = 'loss';
               }
             }
             break;
@@ -262,6 +321,25 @@ async function cleanupResolvedPositions() {
       }
       
       log(`   ${result} ${pos.market?.substring(0, 60) || pos.eventSlug} (entry $${pos.entryPrice?.toFixed(3)})`);
+      
+      // Update P&L tracking
+      updatePnL(tradeResult, payout, cost);
+      
+      // Log to trade history
+      logTradeHistory({
+        timestamp: new Date().toISOString(),
+        city: pos.eventSlug.match(/in-(.+?)-on-/)?.[1] || 'unknown',
+        date: pos.eventSlug.match(/on-(.+)$/)?.[1] || 'unknown',
+        market: pos.market || pos.eventSlug,
+        entryPrice: pos.entryPrice,
+        cost,
+        shares: pos.shares,
+        result: tradeResult,
+        payout,
+        pnl: payout - cost,
+        walletBalance: state.pnl?.walletBalance,
+      });
+      
       toRemove.push(pos);
     } else {
       // Check if event date has passed by >24h — market likely will resolve soon
@@ -282,6 +360,7 @@ async function cleanupResolvedPositions() {
     state.openPositions = state.openPositions.filter(p => !removeSlugs.has(p.eventSlug));
     saveState();
     log(`   🧹 Removed ${toRemove.length} resolved position(s) — ${state.openPositions.length} remaining, ${CONFIG.maxOpenPositions - state.openPositions.length} slots free`);
+    log(`   📈 P&L: ${state.pnl.winCount}W/${state.pnl.lossCount}L | Net: $${state.pnl.netPnL.toFixed(2)} | Wallet: $${state.pnl.walletBalance?.toFixed(2) || '?'}`);
   } else {
     log(`   ℹ️  No resolved positions found`);
   }
@@ -914,8 +993,29 @@ async function main() {
         }
       }
       
+      // Wallet balance tracking (every scan)
+      const scanBalance = await getUsdcEBalance();
+      if (scanBalance !== null) {
+        if (!state.pnl) state.pnl = { totalWins: 0, totalLosses: 0, winCount: 0, lossCount: 0, totalPayout: 0, totalCost: 0, netPnL: 0, walletBalance: null, lastUpdated: null, lastDailySummary: null };
+        state.pnl.walletBalance = scanBalance;
+        state.pnl.lastUpdated = new Date().toISOString();
+        log(`💰 Wallet: $${scanBalance.toFixed(2)} USDC.e`);
+      }
+      
+      // Daily P&L summary (first scan after midnight UTC)
+      const todayUTC = new Date().toISOString().slice(0, 10);
+      if (state.pnl && state.pnl.lastDailySummary !== todayUTC) {
+        state.pnl.lastDailySummary = todayUTC;
+        const summary = `📅 DAILY P&L SUMMARY (${todayUTC}): ${state.pnl.winCount}W/${state.pnl.lossCount}L | Wins: +$${state.pnl.totalWins.toFixed(2)} | Losses: -$${state.pnl.totalLosses.toFixed(2)} | Net: $${state.pnl.netPnL.toFixed(2)} | Cost: $${state.pnl.totalCost.toFixed(2)} | Payout: $${state.pnl.totalPayout.toFixed(2)} | Wallet: $${state.pnl.walletBalance?.toFixed(2) || '?'}`;
+        log(summary);
+        logTradeHistory({ timestamp: new Date().toISOString(), type: 'daily_summary', date: todayUTC, ...state.pnl });
+      }
+      
       // Status summary
       log(`\n📊 Session: ${state.stats.scans} scans | ${state.stats.edgesIdentified} edges | ${state.tradesExecuted} trades | $${state.totalSpent.toFixed(2)} spent | ${state.stats.errors} errors`);
+      if (state.pnl) {
+        log(`📈 P&L: ${state.pnl.winCount}W/${state.pnl.lossCount}L | Net: $${state.pnl.netPnL.toFixed(2)} | Wallet: $${state.pnl.walletBalance?.toFixed(2) || '?'}`);
+      }
       
       if (state.openPositions.length > 0) {
         log(`📂 Positions (${state.openPositions.length}):`);
