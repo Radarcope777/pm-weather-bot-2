@@ -931,8 +931,7 @@ async function main() {
   const remainingBudget = CONFIG.maxBudget - state.totalSpent;
   if (remainingBudget < CONFIG.maxPositionSize) {
     log(`⚠️  Budget exhausted: $${state.totalSpent.toFixed(2)} / $${CONFIG.maxBudget} spent`);
-    log('   Increase CONFIG.maxBudget to continue trading');
-    process.exit(0);
+    log('   Bot will continue monitoring positions but won\'t place new trades');
   }
   log(`💰 Budget remaining: $${remainingBudget.toFixed(2)} / $${CONFIG.maxBudget}`);
   log('');
